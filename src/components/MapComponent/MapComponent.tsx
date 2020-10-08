@@ -7,10 +7,10 @@ import { MdGpsFixed } from "react-icons/md";
 import { FaLayerGroup, FaSearchLocation } from "react-icons/fa";
 import { FiPlus, FiMinus } from "react-icons/fi";
 import config from "../../config";
-import locationImg from "../../assets/png/location.png";
+// import locationImg from "../../assets/png/location.png";
 import "./index.d";
 import algosdk from "algosdk";
-// import Geohash from "latlon-geohash";
+import Geohash from "latlon-geohash";
 
 mapboxgl.accessToken = config.maps.MAP_BOX_ACCESS_TOKEN;
 
@@ -35,65 +35,82 @@ function MapComponent() {
       );
     });
 
-    map.on("load", function () {
+    map.on("load", async function () {
       // Add an image to use as a custom marker
-      map.loadImage(locationImg, async function (error: Error, image: any) {
-        if (error) throw error;
-        map.addImage("custom-marker", image);
-        // Add a GeoJSON source with 2 points
-        await populateMapPoint();
+      //   map.loadImage(locationImg, async function (error: Error, image: any) {
+      //     if (error) throw error;
+      //     map.addImage("custom-marker", image);
+      //     // Add a GeoJSON source with 2 points
+      //     const base64Chikara = btoa("chikaara");
+      //     const populateLatLng = await populateMapPoint(base64Chikara);
 
-        map.addSource("points", {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: [
-              {
-                // feature for Mapbox DC
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [-77.03238901390978, 38.913188059745586],
-                },
-                properties: {},
-              },
-              {
-                // feature for Mapbox SF
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [-122.414, 37.776],
-                },
-                properties: {},
-              },
-            ],
-          },
-        });
+      //     console.log(
+      //       populateLatLng.map((latLng: any) => {
+      //         console.log("LatLng", latLng);
+      //         return {
+      //           // feature for Mapbox DC
+      //           type: "Feature",
+      //           geometry: {
+      //             type: "Point",
+      //             coordinates: [latLng.lng, latLng.lat],
+      //           },
+      //           properties: {},
+      //         };
+      //       })
+      //     );
+      //     map.addSource("points", {
+      //       type: "geojson",
+      //       data: {
+      //         type: "FeatureCollection",
+      //         features: populateLatLng.map((latLng: any) => {
+      //           console.log("LatLng", latLng);
+      //           return {
+      //             // feature for Mapbox DC
+      //             type: "Feature",
+      //             geometry: {
+      //               type: "Point",
+      //               coordinates: [75.734, 26.9357],
+      //             },
+      //             properties: {},
+      //           };
+      //         }),
+      //       },
+      //     });
 
-        // Add a symbol layer
-        map.addLayer({
-          id: "points",
-          type: "symbol",
-          source: "points",
-          layout: {
-            "icon-image": "custom-marker",
-            "icon-size": 0.075,
-            // get the title name from the source's "title" property
-            "text-field": ["get", "title"],
-            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-            "text-offset": [0, 1.25],
-            "text-anchor": "top",
-          },
-          paint: {
-            "text-color": "#ffffff",
-          },
-        });
-      });
+      //     // Add a symbol layer
+      //     map.addLayer({
+      //       id: "points",
+      //       type: "symbol",
+      //       source: "points",
+      //       layout: {
+      //         "icon-image": "custom-marker",
+      //         "icon-size": 0.075,
+      //         // get the title name from the source's "title" property
+      //         "text-field": ["get", "title"],
+      //         "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+      //         "text-offset": [0, 1.25],
+      //         "text-anchor": "top",
+      //       },
+      //       paint: {
+      //         "text-color": "#ffffff",
+      //       },
+      //     });
+      //   });
+
+      const base64Chikara = btoa("chikaara");
+      const populateMapPoints = await populateMapPoint(base64Chikara);
+      populateMapPoints.map((points: any) =>
+        new mapboxgl.Marker()
+          .setLngLat([points.latlng.lon, points.latlng.lat])
+          .setPopup(new mapboxgl.Popup().setHTML(`<h4>${points.nm}</h4>`))
+          .addTo(map)
+      );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const populateMapPoint = async () => {
+  const populateMapPoint = async (base64Chikara: string) => {
+    console.log();
     const token = {
       "X-API-key": "fmprdjLHAM5gfosJUVND49NtPKHEf8dz4CQu0VTY",
     };
@@ -103,16 +120,27 @@ function MapComponent() {
     let indexerClient = new algosdk.Indexer(token, baseServer, port);
     let assetInfo = await indexerClient
       .searchForTransactions()
-      .assetID(12397064)
-      .notePrefix("Y2hpa2FhcmEtdHM=")
+      .assetID(12743544)
+      .notePrefix(base64Chikara)
       .do();
-    const pointGeoHash = assetInfo.transactions.map(
-      (transaction: any) => transaction.note
+    console.log(assetInfo);
+    const pointGeoPoints = assetInfo.transactions.map((transaction: any) =>
+      atob(transaction.note).split("-")[2]
+        ? JSON.parse(atob(transaction.note).split("-")[2])
+        : undefined
     );
-    // const pointLatLong = pointGeoHash.map((hash: string) =>
-    //   Geohash.decode(hash)
-    // );
-    console.log(pointGeoHash);
+    console.log(pointGeoPoints);
+    const pointLatLong = pointGeoPoints.map((point: any) => {
+      try {
+        return { ...point, latlng: Geohash.decode(point.gh) };
+      } catch (err) {
+        console.log(err);
+      }
+      return undefined;
+    });
+    const pointLatLongFiltered = pointLatLong.filter((latLng: any) => latLng);
+    console.log(pointLatLongFiltered);
+    return pointLatLongFiltered;
   };
   return (
     <div className="MapComponent">

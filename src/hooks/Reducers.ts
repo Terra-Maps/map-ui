@@ -14,8 +14,8 @@ const Reducers = (dispatch: any) => ({
 export const stateInitialValue = {
   openModal: false,
   modalConfig: { type: "" },
-  lat: 38,
-  lng: -96,
+  lat: 26,
+  lng: 75,
   zoom: 4,
 };
 
