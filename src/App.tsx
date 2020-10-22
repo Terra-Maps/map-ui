@@ -1,10 +1,11 @@
 import React from "react";
 import "./App.scss";
-import { MapComponent } from "./components";
+import { MapComponent, Modal } from "./components";
 
 function App() {
   return (
     <div className="App">
+      <Modal />
       <MapComponent />
     </div>
   );

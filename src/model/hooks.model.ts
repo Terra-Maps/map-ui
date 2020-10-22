@@ -1,5 +1,5 @@
 export interface IModalConfig {
-  type: string;
+  type?: string;
 }
 
 export interface IModalModel {
