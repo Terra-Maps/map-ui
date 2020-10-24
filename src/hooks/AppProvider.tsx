@@ -22,6 +22,16 @@ export const AppProvider = (props: any) => {
           lng: action.lng,
           zoom: action.zoom,
         };
+      case Actions.SET_WALLET_STEP:
+        return {
+          ...prevState,
+          walletStep: action.walletStep,
+        };
+      case Actions.SET_WALLET_INFO:
+        return {
+          ...prevState,
+          walletInfo: action.walletInfo,
+        };
 
       default:
     }

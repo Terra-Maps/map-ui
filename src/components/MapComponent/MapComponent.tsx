@@ -13,16 +13,20 @@ import config from "../../config";
 import "./index.d";
 import algosdk from "algosdk";
 import Geohash from "latlon-geohash";
+import makeBlockie from "ethereum-blockies-base64";
+import { ApiService } from "../../service";
 
 mapboxgl.accessToken = config.maps.MAP_BOX_ACCESS_TOKEN;
 
 function MapComponent() {
   let mapContainer: any = "";
-  const { lat, lng, zoom } = useContext<IStateModel>(StateContext);
+  const { lat, lng, zoom, walletInfo } = useContext<IStateModel>(StateContext);
   const { setMapLocation, toggleModal } = useContext<IActionModel>(
     ActionContext
   );
   const [map, setMap] = useState<mapboxgl.Map | null>(null);
+  const [locationText, setLocationText] = useState<string>("");
+  const [geocodingLocations, setGeocodingLocations] = useState<any[]>([]);
   const [showSearchLocation, setShowSearchLocation] = useState<boolean>(false);
   useEffect(() => {
     const newMap = new mapboxgl.Map({
@@ -41,76 +45,15 @@ function MapComponent() {
     });
 
     newMap.on("click", (evt) => {
-      console.log(evt)
+      console.log(evt);
     });
 
     newMap.on("load", async function () {
       setMap(newMap);
-      // Add an image to use as a custom marker
-      //   map.loadImage(locationImg, async function (error: Error, image: any) {
-      //     if (error) throw error;
-      //     map.addImage("custom-marker", image);
-      //     // Add a GeoJSON source with 2 points
-      //     const base64Chikara = btoa("chikaara");
-      //     const populateLatLng = await populateMapPoint(base64Chikara);
-
-      //     console.log(
-      //       populateLatLng.map((latLng: any) => {
-      //         console.log("LatLng", latLng);
-      //         return {
-      //           // feature for Mapbox DC
-      //           type: "Feature",
-      //           geometry: {
-      //             type: "Point",
-      //             coordinates: [latLng.lng, latLng.lat],
-      //           },
-      //           properties: {},
-      //         };
-      //       })
-      //     );
-      //     map.addSource("points", {
-      //       type: "geojson",
-      //       data: {
-      //         type: "FeatureCollection",
-      //         features: populateLatLng.map((latLng: any) => {
-      //           console.log("LatLng", latLng);
-      //           return {
-      //             // feature for Mapbox DC
-      //             type: "Feature",
-      //             geometry: {
-      //               type: "Point",
-      //               coordinates: [75.734, 26.9357],
-      //             },
-      //             properties: {},
-      //           };
-      //         }),
-      //       },
-      //     });
-
-      //     // Add a symbol layer
-      //     map.addLayer({
-      //       id: "points",
-      //       type: "symbol",
-      //       source: "points",
-      //       layout: {
-      //         "icon-image": "custom-marker",
-      //         "icon-size": 0.075,
-      //         // get the title name from the source's "title" property
-      //         "text-field": ["get", "title"],
-      //         "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-      //         "text-offset": [0, 1.25],
-      //         "text-anchor": "top",
-      //       },
-      //       paint: {
-      //         "text-color": "#ffffff",
-      //       },
-      //     });
-      //   });
-
       const base64Chikara = btoa("chikaara");
       const populateMapPoints = await populateMapPoint(base64Chikara);
       populateMapPoints.map((points: any) =>
-        new mapboxgl.Marker({ "color": "#6c98e4" })
+        new mapboxgl.Marker({ color: "#6c98e4" })
           .setLngLat([points.latlng.lon, points.latlng.lat])
           .setPopup(new mapboxgl.Popup().setHTML(`<h4>${points.nm}</h4>`))
           .addTo(newMap)
@@ -154,49 +97,27 @@ function MapComponent() {
   };
   const zoomIn = () => {
     map?.flyTo({
-      // These options control the ending camera position: centered at
-      // the target, at zoom level 9, and north up.
       center: [lng, lat],
       zoom: zoom + 1,
       bearing: 0,
-
-      // These options control the flight curve, making it move
-      // slowly and zoom out almost completely before starting
-      // to pan.
       speed: 0.7, // make the flying slow
       curve: 1, // change the speed at which it zooms out
-
-      // This can be any easing function: it takes a number between
-      // 0 and 1 and returns another number between 0 and 1.
       easing: function (t) {
         return t;
       },
-
-      // this animation is considered essential with respect to prefers-reduced-motion
       essential: true,
     });
   };
   const zoomOut = () => {
     map?.flyTo({
-      // These options control the ending camera position: centered at
-      // the target, at zoom level 9, and north up.
       center: [lng, lat],
       zoom: zoom - 1,
       bearing: 0,
-
-      // These options control the flight curve, making it move
-      // slowly and zoom out almost completely before starting
-      // to pan.
       speed: 0.7, // make the flying slow
       curve: 1, // change the speed at which it zooms out
-
-      // This can be any easing function: it takes a number between
-      // 0 and 1 and returns another number between 0 and 1.
       easing: function (t) {
         return t;
       },
-
-      // this animation is considered essential with respect to prefers-reduced-motion
       essential: true,
     });
   };
@@ -213,33 +134,36 @@ function MapComponent() {
           Number.parseFloat("14")
         );
         map?.flyTo({
-          // These options control the ending camera position: centered at
-          // the target, at zoom level 9, and north up.
           center: [
             Number.parseFloat(position.coords.longitude.toFixed(4)),
             Number.parseFloat(position.coords.latitude.toFixed(4)),
           ],
           zoom: 14,
           bearing: 0,
-
-          // These options control the flight curve, making it move
-          // slowly and zoom out almost completely before starting
-          // to pan.
           speed: 1, // make the flying slow
           curve: 1, // change the speed at which it zooms out
-
-          // This can be any easing function: it takes a number between
-          // 0 and 1 and returns another number between 0 and 1.
           easing: function (t) {
             return t;
           },
-
-          // this animation is considered essential with respect to prefers-reduced-motion
           essential: true,
         });
       });
     }
   };
+
+  const getGeocodeLocationCenter = (location: any) => {
+    map?.flyTo({
+      center: location.coordinates,
+      zoom: 14,
+      bearing: 0,
+      speed: 1, // make the flying slow
+      curve: 1, // change the speed at which it zooms out
+      easing: function (t) {
+        return t;
+      },
+      essential: true,
+    });
+  }
 
   useEffect(() => {
     return () => {
@@ -247,6 +171,18 @@ function MapComponent() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const searchLocation = (location: string) => {
+    setLocationText(location);
+    if(location) {
+      ApiService.getGeocodeResult(encodeURIComponent(location)).then((result) => {
+        const locations = result.features.map((feature: any) => ({place_name: feature.place_name, coordinates: feature.center}));
+        setGeocodingLocations(locations);
+      });
+    } else {
+      setGeocodingLocations([]);
+    }
+  };
 
   return (
     <div className="MapComponent">
@@ -262,17 +198,35 @@ function MapComponent() {
             <FaLayerGroup />
           </div>
         </div>
-        <div
-          className="map-side-bar-item"
-          onClick={() => {
-            toggleModal({
-              openModal: true,
-              modalConfig: { type: "wallet" },
-            });
-          }}
-        >
-          <FaWallet />
-        </div>
+        {!walletInfo ? (
+          <div
+            className="map-side-bar-item"
+            onClick={() => {
+              toggleModal({
+                openModal: true,
+                modalConfig: { type: "wallet" },
+              });
+            }}
+          >
+            <FaWallet />
+          </div>
+        ) : (
+          <div
+            className="map-side-bar-item"
+            onClick={() => {
+              toggleModal({
+                openModal: true,
+                modalConfig: { type: "wallet" },
+              });
+            }}
+          >
+            <img
+              src={makeBlockie(walletInfo.address)}
+              alt="wallet-icon"
+              className="wallet-blockie"
+            />
+          </div>
+        )}
       </div>
       {showSearchLocation && (
         <div className="map-search-container">
@@ -284,6 +238,8 @@ function MapComponent() {
               type="search"
               placeholder="Search Location"
               className="map-search-input"
+              onChange={(e) => searchLocation(e.target.value)}
+              value={locationText}
             />
             <div
               className="map-search-close"
@@ -292,15 +248,13 @@ function MapComponent() {
               <GrClose />
             </div>
           </div>
-          {/* <div className="map-search-list-container">
-          <ul>
-            <li>Taj mahal, Agra</li>
-            <li>Taj Mahal Restaurant, Agra</li>
-            <li>Taj Mahal Hotel, Agra</li>
-            <li>Taj Mahal Resort, Jaipur</li>
-            <li>Hotel Taj Mahal, New Delhi</li>
-          </ul>
-        </div> */}
+          <div className="map-search-list-container">
+            <ul>
+              {geocodingLocations.map((location, index) => (
+                <li key={index} onClick={e => getGeocodeLocationCenter(location)}>{location.place_name}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
       <div ref={(el) => (mapContainer = el)} className="mapContainer" />

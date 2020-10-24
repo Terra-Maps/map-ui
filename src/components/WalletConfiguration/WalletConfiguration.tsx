@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
+import { StateContext } from "../../hooks";
+import { IStateModel } from "../../model/hooks.model";
+import { ManageWallets, PrivateKeySignIn } from "./components";
 import "./WalletConfiguration.scss";
 
 function WalletConfiguration() {
+  const { walletStep } = useContext<IStateModel>(StateContext);
 
   return (
     <div className="WalletConfiguration">
       <h2>Manage Wallet</h2>
-      <button className="wallet-button">Use Algosigner</button>
-      <button className="wallet-button">Use Private Key</button>
-      <p>Create a new wallet</p>
+      {walletStep === 0 && <ManageWallets />}
+      {walletStep === 1 && <PrivateKeySignIn />}
     </div>
   );
 }

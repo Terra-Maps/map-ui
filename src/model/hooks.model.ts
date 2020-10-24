@@ -13,9 +13,13 @@ export interface IStateModel {
   lat: number;
   lng: number;
   zoom: number;
+  walletStep: number;
+  walletInfo: any;
 }
 
 export interface IActionModel {
   toggleModal: (modal: IModalModel) => void;
   setMapLocation: (lat: number, lng: number, zoom: number) => void;
+  setWalletStep: (walletStep: number) => void;
+  setWalletInfo: (walletPrivateKey: string) => void;
 }

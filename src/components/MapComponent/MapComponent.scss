@@ -29,6 +29,14 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+
+      .wallet-blockie {
+        height: 32px;
+        width: 32px;
+        border-radius: 50%;
+        border: 2px solid var(--white);
+        cursor: pointer;
+      }
     }
 
     .side-bar-flex-total {
@@ -81,6 +89,8 @@
     .map-search-list-container {
       background-color: var(--white);
       border-radius: 4px;
+      width: 406px;
+      
       ul {
         padding: 0px;
         margin: 0;
