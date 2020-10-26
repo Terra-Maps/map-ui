@@ -1,7 +1,7 @@
-import algosdk from "algosdk";
 import Actions from "./Actions";
 import { IModalModel } from "../model/hooks.model";
 import config from "../config";
+import algosdk from "algosdk";
 
 const Reducers = (dispatch: any) => ({
   toggleModal: (modal: IModalModel) => {
@@ -18,13 +18,12 @@ const Reducers = (dispatch: any) => ({
     let myAccount = algosdk.mnemonicToSecretKey(walletPrivateKey);
     let walletInfo = await algodclient.accountInformation(myAccount.addr).do();
     console.log(walletInfo)
-    dispatch({ type: Actions.SET_WALLET_INFO, walletInfo });
+    dispatch({ type: Actions.SET_WALLET_INFO, walletPrivateKey, walletAccount: myAccount, walletInfo });
     const modal = {
       openModal: false,
       modalConfig: { type: "" },
     }
     dispatch({ type: Actions.TOGGLE_MODAL, modal });
-
   },
 });
 
@@ -35,6 +34,8 @@ export const stateInitialValue = {
   lng: 75,
   zoom: 4,
   walletStep: 0,
+  walletPrivateKey: "",
+  walletAccount: null,
   walletInfo: null
 };
 

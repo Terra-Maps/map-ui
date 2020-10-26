@@ -31,6 +31,8 @@ export const AppProvider = (props: any) => {
         return {
           ...prevState,
           walletInfo: action.walletInfo,
+          walletAccount: action.walletAccount,
+          walletPrivateKey: action.walletPrivateKey,
         };
 
       default:

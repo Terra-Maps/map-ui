@@ -9,12 +9,13 @@ import { FiPlus, FiMinus } from "react-icons/fi";
 import { BsSearch } from "react-icons/bs";
 import { GrClose } from "react-icons/gr";
 import config from "../../config";
-// import locationImg from "../../assets/png/location.png";
+import Switch from "react-switch";
 import "./index.d";
 import algosdk from "algosdk";
 import Geohash from "latlon-geohash";
 import makeBlockie from "ethereum-blockies-base64";
 import { ApiService } from "../../service";
+import { AddPointForm } from "./components";
 
 mapboxgl.accessToken = config.maps.MAP_BOX_ACCESS_TOKEN;
 
@@ -28,6 +29,10 @@ function MapComponent() {
   const [locationText, setLocationText] = useState<string>("");
   const [geocodingLocations, setGeocodingLocations] = useState<any[]>([]);
   const [showSearchLocation, setShowSearchLocation] = useState<boolean>(false);
+  const [showLeftSideBar, setShowLeftSideBar] = useState<boolean>(false);
+  const [addPOIConfig, setAddPOIConfig] = useState<any>(null);
+  const [addPOIMode, setAddPOIMode] = useState<boolean>(false);
+
   useEffect(() => {
     const newMap = new mapboxgl.Map({
       container: mapContainer,
@@ -44,23 +49,39 @@ function MapComponent() {
       );
     });
 
-    newMap.on("click", (evt) => {
-      console.log(evt);
-    });
-
     newMap.on("load", async function () {
       setMap(newMap);
-      const base64Chikara = btoa("chikaara");
-      const populateMapPoints = await populateMapPoint(base64Chikara);
+      loadMapPoi(newMap);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const mapClickListener = (evt: any) => {
+    const geohash = Geohash.encode(
+      evt.lngLat.lat,
+      evt.lngLat.lng,
+      evt.target.getZoom()
+    );
+    setAddPOIConfig({
+      geohash,
+      latlng: { lat: evt.lngLat.lat, lng: evt.lngLat.lng },
+      zoom: evt.target.getZoom(),
+    });
+    setShowLeftSideBar(true);
+  };
+
+  const loadMapPoi = async (map: mapboxgl.Map) => {
+    const base64Chikara = btoa("chikaara");
+    const populateMapPoints = await populateMapPoint(base64Chikara);
+    if (map) {
       populateMapPoints.map((points: any) =>
         new mapboxgl.Marker({ color: "#6c98e4" })
           .setLngLat([points.latlng.lon, points.latlng.lat])
           .setPopup(new mapboxgl.Popup().setHTML(`<h4>${points.nm}</h4>`))
-          .addTo(newMap)
+          .addTo(map)
       );
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    }
+  };
 
   const populateMapPoint = async (base64Chikara: string) => {
     console.log();
@@ -134,10 +155,7 @@ function MapComponent() {
           Number.parseFloat("14")
         );
         map?.flyTo({
-          center: [
-            Number.parseFloat(position.coords.longitude.toFixed(4)),
-            Number.parseFloat(position.coords.latitude.toFixed(4)),
-          ],
+          center: [position.coords.longitude, position.coords.latitude],
           zoom: 14,
           bearing: 0,
           speed: 1, // make the flying slow
@@ -163,26 +181,52 @@ function MapComponent() {
       },
       essential: true,
     });
-  }
+  };
 
   useEffect(() => {
     return () => {
       navigator.geolocation.clearWatch(watchLocation);
+      map?.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const searchLocation = (location: string) => {
     setLocationText(location);
-    if(location) {
-      ApiService.getGeocodeResult(encodeURIComponent(location)).then((result) => {
-        const locations = result.features.map((feature: any) => ({place_name: feature.place_name, coordinates: feature.center}));
-        setGeocodingLocations(locations);
-      });
+    if (location) {
+      ApiService.getGeocodeResult(encodeURIComponent(location)).then(
+        (result) => {
+          const locations = result.features.map((feature: any) => ({
+            place_name: feature.place_name,
+            coordinates: feature.center,
+          }));
+          setGeocodingLocations(locations);
+        }
+      );
     } else {
       setGeocodingLocations([]);
     }
   };
+
+  const refreshMap = () => {
+    if (map) {
+      console.log(map);
+      setTimeout(() => {
+        loadMapPoi(map);
+      }, 10000);
+    }
+  };
+
+  const changeAddPOIMode = (checked: boolean) => {
+    console.log(checked)
+    if(checked) {
+      map?.on("click", mapClickListener);
+    } else {
+      console.log("Enter", map)
+      map?.off("click", mapClickListener);
+    }
+    setAddPOIMode(checked);
+  }
 
   return (
     <div className="MapComponent">
@@ -251,22 +295,37 @@ function MapComponent() {
           <div className="map-search-list-container">
             <ul>
               {geocodingLocations.map((location, index) => (
-                <li key={index} onClick={e => getGeocodeLocationCenter(location)}>{location.place_name}</li>
+                <li
+                  key={index}
+                  onClick={(e) => getGeocodeLocationCenter(location)}
+                >
+                  {location.place_name}
+                </li>
               ))}
             </ul>
           </div>
         </div>
       )}
       <div ref={(el) => (mapContainer = el)} className="mapContainer" />
+      {showLeftSideBar && (
+        <div className="map-left-side-bar">
+          <AddPointForm
+            addPOIConfig={addPOIConfig}
+            setShowLeftSideBar={(flag) => setShowLeftSideBar(flag)}
+            setAddPOIConfig={(config) => setAddPOIConfig(config)}
+            refreshMap={() => refreshMap()}
+          />
+        </div>
+      )}
       <div className="map-location-bottom-container">
         <div className="map-location-details">
           <div className="map-location-inner">
             <div className="map-location-item">
-              <span>{lat.toFixed(4)}</span>
+              <span>{lat}</span>
               <span className="map-location-superscript">Lat</span>
             </div>
             <div className="map-location-item">
-              <span>{lng.toFixed(4)}</span>
+              <span>{lng}</span>
               <span className="map-location-superscript">Lng</span>
             </div>
             <div className="map-location-item">
@@ -287,6 +346,25 @@ function MapComponent() {
             onClick={showCurrentLocation}
           >
             <MdGpsFixed />
+          </div>
+        </div>
+        <div className="add-poi-mode-actions">
+          <div className="add-poi-title">Cartographer Mode</div>
+          <div className="add-poi-switch">
+          <Switch
+              checked={addPOIMode}
+              onChange={(checked) => changeAddPOIMode(checked)}
+              onColor="#a2c4ff"
+              onHandleColor="#6c98e4"
+              handleDiameter={30}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+              height={20}
+              width={48}
+              className="react-switch"
+            />
           </div>
         </div>
       </div>

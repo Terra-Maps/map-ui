@@ -14,6 +14,8 @@ export interface IStateModel {
   lng: number;
   zoom: number;
   walletStep: number;
+  walletPrivateKey: string;
+  walletAccount: any;
   walletInfo: any;
 }
 
