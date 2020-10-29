@@ -41,7 +41,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.2s ease-in;
       cursor: pointer;
+
+      &:hover {
+        background-color: var(--secondaryColor);
+      }
 
       .wallet-blockie {
         height: 32px;
