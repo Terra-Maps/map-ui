@@ -14,24 +14,27 @@ const Reducers = (dispatch: any) => ({
     dispatch({ type: Actions.SET_WALLET_STEP, walletStep });
   },
   setWalletInfo: async (walletPrivateKey: string) => {
-    const algodclient = new algosdk.Algodv2(config.algorand.token, config.algorand.baseServer, config.algorand.port);
-    let myAccount = algosdk.mnemonicToSecretKey(walletPrivateKey);
-    let walletInfo = await algodclient.accountInformation(myAccount.addr).do();
-    console.log(walletInfo)
-    dispatch({ type: Actions.SET_WALLET_INFO, walletPrivateKey, walletAccount: myAccount, walletInfo });
-    const modal = {
-      openModal: false,
-      modalConfig: { type: "" },
-    }
-    dispatch({ type: Actions.TOGGLE_MODAL, modal });
+    return new Promise<void>(async (resolve, reject) => {
+      const algodclient = new algosdk.Algodv2(config.algorand.token, config.algorand.baseServer, config.algorand.port);
+      let myAccount = algosdk.mnemonicToSecretKey(walletPrivateKey);
+      let walletInfo = await algodclient.accountInformation(myAccount.addr).do();
+      console.log(walletInfo)
+      dispatch({ type: Actions.SET_WALLET_INFO, walletPrivateKey, walletAccount: myAccount, walletInfo });
+      const modal = {
+        openModal: false,
+        modalConfig: { type: "" },
+      }
+      dispatch({ type: Actions.TOGGLE_MODAL, modal });
+      resolve()
+    })
   },
 });
 
 export const stateInitialValue = {
   openModal: false,
   modalConfig: { type: "" },
-  lat: 26,
-  lng: 75,
+  lat: 26.29,
+  lng: 78.12,
   zoom: 4,
   walletStep: 0,
   walletPrivateKey: "",

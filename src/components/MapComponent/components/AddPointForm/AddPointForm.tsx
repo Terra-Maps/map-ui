@@ -7,6 +7,7 @@ import "./AddPointForm.scss";
 import IAddPointForm from "./model";
 import algosdk from "algosdk";
 import config from "../../../../config";
+import { BeatLoader } from "react-spinners";
 
 const AddPointForm: FC<IAddPointForm> = ({
   addPOIConfig,
@@ -21,8 +22,10 @@ const AddPointForm: FC<IAddPointForm> = ({
   const [poiAddress, setPoiAddress] = useState<string>("");
   const [poiDescription, setPoiDescription] = useState<string>("");
   const [poiStakeAmount, setPoiStakeAmount] = useState<string>("0");
+  const [addPoiLoader, setAddPoiLoader] = useState<boolean>(false);
 
   const addPOI = async () => {
+    setAddPoiLoader(true);
     const poi = {
       nm: poiName,
       gh: addPOIConfig.geohash,
@@ -31,6 +34,7 @@ const AddPointForm: FC<IAddPointForm> = ({
       ds: poiDescription,
       st: poiStakeAmount,
     };
+    console.log(poi)
     const noteField = `chikaara-${addPOIConfig.geohash}-${JSON.stringify(poi)}`;
     var noteFieldUInt = stringToUint(noteField);
     console.log(walletAccount, noteField);
@@ -59,6 +63,8 @@ const AddPointForm: FC<IAddPointForm> = ({
     const rawSignedTxn = xtxn.signTxn(walletAccount.sk);
     let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
     console.log("Transaction : " + xtx.txId);
+    setAddPoiLoader(false);
+    setShowLeftSideBar(false);
     refreshMap();
   };
 
@@ -153,7 +159,11 @@ const AddPointForm: FC<IAddPointForm> = ({
             disabled={!walletAccount}
             onClick={addPOI}
           >
-            Add POI
+            {addPoiLoader ? (
+              <BeatLoader size={10} color={"#fff"} loading={true} />
+            ) : (
+              "Add POI"
+            )}
           </button>
         </div>
       </div>

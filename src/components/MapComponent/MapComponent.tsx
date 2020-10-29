@@ -15,7 +15,7 @@ import algosdk from "algosdk";
 import Geohash from "latlon-geohash";
 import makeBlockie from "ethereum-blockies-base64";
 import { ApiService } from "../../service";
-import { AddPointForm } from "./components";
+import { AddPointForm, ViewPointForm } from "./components";
 
 mapboxgl.accessToken = config.maps.MAP_BOX_ACCESS_TOKEN;
 
@@ -32,6 +32,8 @@ function MapComponent() {
   const [showLeftSideBar, setShowLeftSideBar] = useState<boolean>(false);
   const [addPOIConfig, setAddPOIConfig] = useState<any>(null);
   const [addPOIMode, setAddPOIMode] = useState<boolean>(false);
+  const [sidebarAddPOIMode, setSidebarAddPOIMode] = useState<boolean>(true);
+  const [viewPOIConfig, setViewPOIConfig] = useState<any>(null);
 
   useEffect(() => {
     const newMap = new mapboxgl.Map({
@@ -67,6 +69,7 @@ function MapComponent() {
       latlng: { lat: evt.lngLat.lat, lng: evt.lngLat.lng },
       zoom: evt.target.getZoom(),
     });
+    setSidebarAddPOIMode(true);
     setShowLeftSideBar(true);
   };
 
@@ -74,12 +77,19 @@ function MapComponent() {
     const base64Chikara = btoa("chikaara");
     const populateMapPoints = await populateMapPoint(base64Chikara);
     if (map) {
-      populateMapPoints.map((points: any) =>
-        new mapboxgl.Marker({ color: "#6c98e4" })
+      populateMapPoints.map((points: any) => {
+        const marker = new mapboxgl.Marker({ color: "#6c98e4" })
           .setLngLat([points.latlng.lon, points.latlng.lat])
-          .setPopup(new mapboxgl.Popup().setHTML(`<h4>${points.nm}</h4>`))
-          .addTo(map)
-      );
+          .addTo(map);
+        marker.getElement().addEventListener("click", function (e) {
+          e.stopPropagation();
+          console.log(points);
+          setSidebarAddPOIMode(false);
+          setViewPOIConfig(points);
+          setShowLeftSideBar(true);
+        });
+        return marker;
+      });
     }
   };
 
@@ -98,11 +108,16 @@ function MapComponent() {
       .notePrefix(base64Chikara)
       .do();
     console.log(assetInfo);
-    const pointGeoPoints = assetInfo.transactions.map((transaction: any) =>
-      atob(transaction.note).split("-")[2]
-        ? JSON.parse(atob(transaction.note).split("-")[2])
-        : undefined
-    );
+    const pointGeoPoints = assetInfo.transactions.map((transaction: any) => {
+      try {
+        return atob(transaction.note).split("-")[2]
+          ? JSON.parse(atob(transaction.note).split("-")[2])
+          : undefined;
+      } catch (err) {
+        console.log(err);
+        return undefined;
+      }
+    });
     console.log(pointGeoPoints);
     const pointLatLong = pointGeoPoints.map((point: any) => {
       try {
@@ -116,6 +131,7 @@ function MapComponent() {
     console.log(pointLatLongFiltered);
     return pointLatLongFiltered;
   };
+
   const zoomIn = () => {
     map?.flyTo({
       center: [lng, lat],
@@ -129,6 +145,7 @@ function MapComponent() {
       essential: true,
     });
   };
+
   const zoomOut = () => {
     map?.flyTo({
       center: [lng, lat],
@@ -213,20 +230,43 @@ function MapComponent() {
       console.log(map);
       setTimeout(() => {
         loadMapPoi(map);
-      }, 10000);
+      }, 15000);
     }
   };
 
   const changeAddPOIMode = (checked: boolean) => {
-    console.log(checked)
-    if(checked) {
+    console.log(checked);
+    if (checked) {
       map?.on("click", mapClickListener);
+      map?.flyTo({
+        center: [lng, lat],
+        zoom: 15,
+        bearing: 0,
+        speed: 0.7, // make the flying slow
+        curve: 1, // change the speed at which it zooms out
+        easing: function (t) {
+          return t;
+        },
+        essential: true,
+      });
     } else {
-      console.log("Enter", map)
-      map?.off("click", mapClickListener);
+      console.log("Enter", map);
+      map?.getCanvasContainer().removeEventListener("click", mapClickListener);
+      // map?.off("click", mapClickListener);
+      map?.flyTo({
+        center: [lng, lat],
+        zoom: 4,
+        bearing: 0,
+        speed: 0.7, // make the flying slow
+        curve: 1, // change the speed at which it zooms out
+        easing: function (t) {
+          return t;
+        },
+        essential: true,
+      });
     }
     setAddPOIMode(checked);
-  }
+  };
 
   return (
     <div className="MapComponent">
@@ -260,7 +300,7 @@ function MapComponent() {
             onClick={() => {
               toggleModal({
                 openModal: true,
-                modalConfig: { type: "wallet" },
+                modalConfig: { type: "wallet-details" },
               });
             }}
           >
@@ -309,12 +349,20 @@ function MapComponent() {
       <div ref={(el) => (mapContainer = el)} className="mapContainer" />
       {showLeftSideBar && (
         <div className="map-left-side-bar">
-          <AddPointForm
-            addPOIConfig={addPOIConfig}
-            setShowLeftSideBar={(flag) => setShowLeftSideBar(flag)}
-            setAddPOIConfig={(config) => setAddPOIConfig(config)}
-            refreshMap={() => refreshMap()}
-          />
+          {sidebarAddPOIMode ? (
+            <AddPointForm
+              addPOIConfig={addPOIConfig}
+              setShowLeftSideBar={(flag) => setShowLeftSideBar(flag)}
+              setAddPOIConfig={(config) => setAddPOIConfig(config)}
+              refreshMap={() => refreshMap()}
+            />
+          ) : (
+            <ViewPointForm
+              viewPOIConfig={viewPOIConfig}
+              setShowLeftSideBar={(flag) => setShowLeftSideBar(flag)}
+              setViewPOIConfig={(config) => setViewPOIConfig(config)}
+            />
+          )}
         </div>
       )}
       <div className="map-location-bottom-container">
@@ -351,7 +399,7 @@ function MapComponent() {
         <div className="add-poi-mode-actions">
           <div className="add-poi-title">Cartographer Mode</div>
           <div className="add-poi-switch">
-          <Switch
+            <Switch
               checked={addPOIMode}
               onChange={(checked) => changeAddPOIMode(checked)}
               onColor="#a2c4ff"

@@ -23,5 +23,5 @@ export interface IActionModel {
   toggleModal: (modal: IModalModel) => void;
   setMapLocation: (lat: number, lng: number, zoom: number) => void;
   setWalletStep: (walletStep: number) => void;
-  setWalletInfo: (walletPrivateKey: string) => void;
+  setWalletInfo: (walletPrivateKey: string) => Promise<void>;
 }

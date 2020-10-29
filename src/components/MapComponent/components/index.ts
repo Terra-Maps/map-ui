@@ -1,3 +1,4 @@
 import AddPointForm from "./AddPointForm";
+import ViewPointForm from "./ViewPointForm";
 
-export { AddPointForm };
+export { AddPointForm, ViewPointForm };

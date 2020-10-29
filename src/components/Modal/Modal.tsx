@@ -3,7 +3,7 @@ import "./Modal.scss";
 import { StateContext, ActionContext } from "../../hooks";
 import { IActionModel, IStateModel } from "../../model/hooks.model";
 import { FiX } from "react-icons/fi";
-import { WalletConfiguration } from "..";
+import { WalletConfiguration, WalletDetails } from "..";
 
 function Modal() {
   const { toggleModal } = useContext<IActionModel>(ActionContext);
@@ -27,6 +27,7 @@ function Modal() {
         </button>
         <div className="modal-guts">
           {modalConfig.type === "wallet" && <WalletConfiguration />}
+          {modalConfig.type === "wallet-details" && <WalletDetails />}
         </div>
       </div>
     </div>

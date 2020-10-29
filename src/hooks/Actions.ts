@@ -10,5 +10,5 @@ export const actionInitialValue = {
   toggleModal: (modal: IModalModel) => {},
   setMapLocation: (lat: number, lng: number, zoom: number) => {},
   setWalletStep: (walletStep: number) => {},
-  setWalletInfo: (walletPrivateKey: string) => {},
+  setWalletInfo: (walletPrivateKey: string) => new Promise<void>((resolve, reject) => {}),
 };
