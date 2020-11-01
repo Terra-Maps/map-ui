@@ -1,0 +1,141 @@
+.VotingReveal {
+  .view-poi-voting-reveal-details {
+    overflow-y: auto;
+    padding: 0px 1rem;
+    h2 {
+      margin: 0;
+      margin-top: 1rem;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .view-poi-voting-reveal-salt {
+      display: flex;
+      flex-direction: column;
+      margin: 0.5rem 0;
+      position: relative;
+      border-top: 1px solid var(--grey1Color);
+      padding-top: 1rem;
+
+      label {
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .view-poi-voting-reveal-salt-input {
+        margin-top: 0.5rem;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 16px;
+        border: 1px solid var(--grey3Color);
+        outline: none;
+
+        &:focus {
+          border: 1px solid var(--grey5Color);
+        }
+      }
+    }
+
+    .view-poi-voting-reveal-options-container {
+      display: flex;
+      flex-direction: column;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--grey1Color);
+
+
+      label {
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .view-poi-voting-reveal-options {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        margin-top: 0.5rem;
+
+        .view-poi-voting-reveal-option {
+          display: flex;
+          flex: 1;
+          font-weight: normal;
+          input {
+            margin-top: 5px;
+          }
+        }
+      }
+    }
+
+    .view-poi-voting-reveal-button-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+      .reveal-button {
+        position: relative;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        justify-content: center;
+        text-align: center;
+        line-height: 32px;
+        white-space: nowrap;
+        font-weight: 500;
+        font-family: var(--font-sans);
+        min-width: 50%;
+        height: 40px;
+        font-size: 1rem;
+        flex-shrink: 0;
+        color: #fff;
+        -webkit-transition: all 0.2s ease;
+        transition: all 0.2s ease;
+        user-select: none;
+        cursor: pointer;
+        overflow: hidden;
+        outline: none;
+        box-sizing: border-box;
+        text-decoration: none;
+        padding: 0px 20px;
+        margin: 0px;
+        border-radius: 5px;
+        background-color: var(--themeColor);
+        border: 1px solid var(--themeColor);
+
+      }
+    }
+
+    .view-poi-voting-reveal-duration {
+      display: flex;
+      flex-direction: column;
+      margin: 1rem 0;
+      position: relative;
+
+      label {
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .view-poi-voting-reveal-progress-container {
+        width: 100%;
+        height: 14px;
+        background: #d8d8d8;
+        border-radius: 13.2853px;
+        margin-top: 0.5rem;
+        .view-poi-voting-reveal-progress {
+          background: linear-gradient(90deg, #6ca2ff 0%, #1b2737 100%);
+          border-radius: 13.2853px;
+          height: 14px;
+          width: 10%;
+        }
+      }
+
+      .view-poi-voting-reveal-progress-labels-container {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #3a3a3a;
+        opacity: 0.6;
+        margin-top: 6px;
+      }
+    }
+  }
+}

@@ -1,7 +1,6 @@
 .ViewPointForm {
   height: 100%;
   display: flex;
-  margin: 1rem 0px;
 
   .view-poi-container {
     display: flex;
@@ -11,7 +10,8 @@
       display: flex;
       margin-bottom: 1rem;
       justify-content: space-between;
-      padding: 0px 1rem;
+      padding: 1rem;
+      padding-bottom: 0px;
 
       h2 {
         margin: 0;
@@ -106,6 +106,8 @@
         flex-direction: column;
         margin: 0.5rem 0;
         position: relative;
+        border-top: 1px solid var(--grey1Color);
+        padding-top: 1rem;
 
         label {
           font-size: 16px;
@@ -198,9 +200,7 @@
         display: flex;
         flex-direction: column;
         margin: 1rem 0;
-        padding-top: 1rem;
         position: relative;
-        border-top: 1px solid var(--grey1Color);
 
         label {
           font-size: 16px;

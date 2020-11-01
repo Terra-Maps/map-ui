@@ -1,15 +1,17 @@
 import React, { FC } from "react";
 import { FiX } from "react-icons/fi";
 import "./ViewPointForm.scss";
-import IViewPointForm from "./model";
-import { FaCheck, FaTimes, FaSyncAlt } from "react-icons/fa";
+import IViewPointFormProps from "./model";
+import { FaCheck, FaTimes } from "react-icons/fa";
+import { VotingClaim, VotingOngoing, VotingReveal } from "./components";
 
-const ViewPointForm: FC<IViewPointForm> = ({
+const ViewPointForm: FC<IViewPointFormProps> = ({
   viewPOIConfig,
   setShowLeftSideBar,
   setViewPOIConfig,
 }) => {
-  viewPOIConfig.vf = true;
+  viewPOIConfig.vf = false;
+
   return (
     <div className="ViewPointForm">
       <div className="view-poi-container">
@@ -59,52 +61,7 @@ const ViewPointForm: FC<IViewPointForm> = ({
             </div>
           </div>
         </div>
-        <div className="view-poi-voting-details">
-          <h2>What do you think?</h2>
-          <div className="view-poi-voting-stake">
-            <label>Stake Amount</label>
-            <input
-              type="number"
-              className="view-poi-voting-stake-input"
-              placeholder="Enter a stake amount"
-              min={1}
-              // value={poiStakeAmount}
-              // onChange={(e) => setPoiStakeAmount(e.target.value)}
-            />
-          </div>
-          <div className="view-poi-voting-button-options">
-            <button className="voting-button correct-button">Correct</button>
-            <button className="voting-button incorrect-button">
-              Incorrect
-            </button>
-          </div>
-          <div className="view-poi-voting-duration">
-            <label>Voting Time</label>
-            <div className="view-poi-voting-progress-container">
-              <div
-                className="view-poi-voting-progress"
-                style={{
-                  width: `${20}%`,
-                }}
-              ></div>
-            </div>
-            <div className="view-poi-voting-progress-labels-container">
-              <span>
-                24 Hrs Left
-              </span>
-              <span>50% done</span>
-            </div>
-          </div>
-          <div className="view-poi-voting-salt">
-            <label>Your Voting Secret Salt</label>
-            <div className="view-poi-voting-salt-data">
-              <div className="view-poi-voting-salt-value">JUICY$22</div>
-              <div className="view-poi-voting-salt-reload">
-                <FaSyncAlt />
-              </div>
-            </div>
-          </div>
-        </div>
+        {!viewPOIConfig.vf && <VotingReveal viewPOIConfig={viewPOIConfig} />}
       </div>
     </div>
   );
