@@ -6,7 +6,11 @@ interface IConfig {
     token: any;
     baseServer: string;
     port: string;
-  }
+  };
+  urls: {
+    BASE_URL: string;
+    API_URL: string;
+  };
 }
 
 const NODE_ENV: string = "development";
@@ -23,7 +27,11 @@ const development: IConfig = {
     },
     baseServer: 'https://testnet-algorand.api.purestake.io/ps2',
     port: ''
-  }
+  },
+  urls: {
+    BASE_URL: process.env.BASE_URL || "http://localhost:3000",
+    API_URL: process.env.API_URL || "http://localhost:8080",
+  },
 };
 
 const production: IConfig = {
@@ -36,7 +44,11 @@ const production: IConfig = {
     },
     baseServer: 'https://testnet-algorand.api.purestake.io/ps2',
     port: ''
-  }
+  },
+  urls: {
+    BASE_URL: process.env.BASE_URL || "http://localhost:3000",
+    API_URL: process.env.API_URL || "http://localhost:8080",
+  },
 };
 
 const test: IConfig = {
@@ -49,7 +61,11 @@ const test: IConfig = {
     },
     baseServer: 'https://testnet-algorand.api.purestake.io/ps2',
     port: ''
-  }
+  },
+  urls: {
+    BASE_URL: process.env.BASE_URL || "http://localhost:3000",
+    API_URL: process.env.API_URL || "http://localhost:8080",
+  },
 };
 
 const config: {

@@ -21,7 +21,9 @@ mapboxgl.accessToken = config.maps.MAP_BOX_ACCESS_TOKEN;
 
 function MapComponent() {
   let mapContainer: any = "";
-  const { lat, lng, zoom, walletInfo } = useContext<IStateModel>(StateContext);
+  const { lat, lng, zoom, walletInfo, user } = useContext<IStateModel>(
+    StateContext
+  );
   const { setMapLocation, toggleModal } = useContext<IActionModel>(
     ActionContext
   );
@@ -347,24 +349,62 @@ function MapComponent() {
         </div>
       )}
       <div ref={(el) => (mapContainer = el)} className="mapContainer" />
-      {showLeftSideBar && (
-        <div className="map-left-side-bar">
-          {sidebarAddPOIMode ? (
-            <AddPointForm
-              addPOIConfig={addPOIConfig}
-              setShowLeftSideBar={(flag) => setShowLeftSideBar(flag)}
-              setAddPOIConfig={(config) => setAddPOIConfig(config)}
-              refreshMap={() => refreshMap()}
-            />
+
+      <div className="map-left-side-bar">
+        <div className="map-auth-container">
+          {!user ? (
+            <>
+              <button
+                className="login-button"
+                onClick={(e) =>
+                  toggleModal({
+                    openModal: true,
+                    modalConfig: { type: "login" },
+                  })
+                }
+              >
+                Login
+              </button>
+              <button
+                className="signup-button"
+                onClick={(e) =>
+                  toggleModal({
+                    openModal: true,
+                    modalConfig: { type: "signup" },
+                  })
+                }
+              >
+                Signup
+              </button>
+            </>
           ) : (
-            <ViewPointForm
-              viewPOIConfig={viewPOIConfig}
-              setShowLeftSideBar={(flag) => setShowLeftSideBar(flag)}
-              setViewPOIConfig={(config) => setViewPOIConfig(config)}
+            <img
+              src={user?.provider_profile?.avatar_url}
+              alt="address-blockie"
+              className="user-profile-blockie-icon"
+              height={42}
+              width={42}
+              loading="lazy"
             />
           )}
         </div>
-      )}
+        {sidebarAddPOIMode
+          ? showLeftSideBar && (
+              <AddPointForm
+                addPOIConfig={addPOIConfig}
+                setShowLeftSideBar={(flag) => setShowLeftSideBar(flag)}
+                setAddPOIConfig={(config) => setAddPOIConfig(config)}
+                refreshMap={() => refreshMap()}
+              />
+            )
+          : showLeftSideBar && (
+              <ViewPointForm
+                viewPOIConfig={viewPOIConfig}
+                setShowLeftSideBar={(flag) => setShowLeftSideBar(flag)}
+                setViewPOIConfig={(config) => setViewPOIConfig(config)}
+              />
+            )}
+      </div>
       <div className="map-location-bottom-container">
         <div className="map-location-details">
           <div className="map-location-inner">

@@ -34,6 +34,11 @@ export const AppProvider = (props: any) => {
           walletAccount: action.walletAccount,
           walletPrivateKey: action.walletPrivateKey,
         };
+      case Actions.SET_USER:
+        return {
+          ...prevState,
+          user: action.user,
+        };
 
       default:
     }

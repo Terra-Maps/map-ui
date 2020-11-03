@@ -2,6 +2,7 @@ import Actions from "./Actions";
 import { IModalModel } from "../model/hooks.model";
 import config from "../config";
 import algosdk from "algosdk";
+import { ApiService } from "../service";
 
 const Reducers = (dispatch: any) => ({
   toggleModal: (modal: IModalModel) => {
@@ -15,18 +16,43 @@ const Reducers = (dispatch: any) => ({
   },
   setWalletInfo: async (walletPrivateKey: string) => {
     return new Promise<void>(async (resolve, reject) => {
-      const algodclient = new algosdk.Algodv2(config.algorand.token, config.algorand.baseServer, config.algorand.port);
+      const algodclient = new algosdk.Algodv2(
+        config.algorand.token,
+        config.algorand.baseServer,
+        config.algorand.port
+      );
       let myAccount = algosdk.mnemonicToSecretKey(walletPrivateKey);
-      let walletInfo = await algodclient.accountInformation(myAccount.addr).do();
-      console.log(walletInfo)
-      dispatch({ type: Actions.SET_WALLET_INFO, walletPrivateKey, walletAccount: myAccount, walletInfo });
+      let walletInfo = await algodclient
+        .accountInformation(myAccount.addr)
+        .do();
+      console.log(walletInfo);
+      dispatch({
+        type: Actions.SET_WALLET_INFO,
+        walletPrivateKey,
+        walletAccount: myAccount,
+        walletInfo,
+      });
       const modal = {
         openModal: false,
         modalConfig: { type: "" },
-      }
+      };
       dispatch({ type: Actions.TOGGLE_MODAL, modal });
-      resolve()
-    })
+      resolve();
+    });
+  },
+  fetchUser: async () => {
+    const response = await ApiService.fetchUser("1234");
+    console.log(response);
+    if (response.user) {
+      dispatch({ type: Actions.SET_USER, user: response.user });
+      const modal = {
+        openModal: false,
+        modalConfig: { type: "" },
+      };
+      dispatch({ type: Actions.TOGGLE_MODAL, modal });
+    } else {
+      localStorage.removeItem("jwt-token");
+    }
   },
 });
 
@@ -39,7 +65,8 @@ export const stateInitialValue = {
   walletStep: 0,
   walletPrivateKey: "",
   walletAccount: null,
-  walletInfo: null
+  walletInfo: null,
+  user: null,
 };
 
 export default Reducers;

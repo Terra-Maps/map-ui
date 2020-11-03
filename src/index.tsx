@@ -4,12 +4,15 @@ import "./index.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import AppProvider from "./hooks";
+import { BrowserRouter as Router } from "react-router-dom";
 
 ReactDOM.render(
   <React.StrictMode>
-    <AppProvider>
-      <App />
-    </AppProvider>
+    <Router>
+      <AppProvider>
+        <App />
+      </AppProvider>
+    </Router>
   </React.StrictMode>,
   document.getElementById("root")
 );

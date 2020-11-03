@@ -1,6 +1,10 @@
 .ViewPointForm {
   height: 100%;
   display: flex;
+  width: 400px;
+  background-color: var(--white);
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+
 
   .view-poi-container {
     display: flex;

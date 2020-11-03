@@ -17,6 +17,7 @@ export interface IStateModel {
   walletPrivateKey: string;
   walletAccount: any;
   walletInfo: any;
+  user: any;
 }
 
 export interface IActionModel {
@@ -24,4 +25,5 @@ export interface IActionModel {
   setMapLocation: (lat: number, lng: number, zoom: number) => void;
   setWalletStep: (walletStep: number) => void;
   setWalletInfo: (walletPrivateKey: string) => Promise<void>;
+  fetchUser: () => void
 }
