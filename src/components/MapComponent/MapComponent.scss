@@ -39,42 +39,12 @@
         }
       }
 
+
       .login-button {
-        background: var(--white);
-        text-decoration: none;
-        box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.12);
-        color: var(--secondaryColor);
-        font-size: 16px;
-        font-weight: 600;
-        border-radius: 24px;
-        padding: 0.5rem 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid var(--secondaryColor);
-        outline: none;
-        cursor: pointer;
-        transition: all 0.3s ease-in-out;
-        margin-left: 1rem;
-        width: 104px;
-
-        &:hover {
-          background: var(--primaryDisabled);
-          border: 2px solid var(--primaryDisabled);
-          color: var(--white);
-        }
-
-        &:disabled {
-          background: #040c34;
-          cursor: not-allowed;
-        }
-      }
-
-      .signup-button {
         background: var(--secondaryColor);
         text-decoration: none;
         box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.12);
-        color: var(--white);
+        color: var(--themeColor);
         font-size: 16px;
         font-weight: 600;
         border-radius: 24px;

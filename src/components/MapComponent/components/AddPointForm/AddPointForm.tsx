@@ -39,9 +39,9 @@ const AddPointForm: FC<IAddPointForm> = ({
     var noteFieldUInt = stringToUint(noteField);
     console.log(walletAccount, noteField);
     const algodclient = new algosdk.Algodv2(
-      config.algorand.token,
-      config.algorand.baseServer,
-      config.algorand.port
+      config.algorand.TOKEN,
+      config.algorand.BASE_SERVER,
+      config.algorand.PORT
     );
     let params = await algodclient.getTransactionParams().do();
     let sender = walletAccount.addr;

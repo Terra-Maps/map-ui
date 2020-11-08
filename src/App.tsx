@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import "./App.scss";
-import { MapComponent, Modal, SignupWorkflows } from "./components";
+import { MapComponent, Modal } from "./components";
 import { BroadcastChannel } from "broadcast-channel";
 import { IActionModel } from "./model/hooks.model";
 import { ActionContext } from "./hooks";
@@ -34,11 +34,10 @@ function App() {
       <Modal />
       <Switch>
         <Route path="/" exact render={() => <MapComponent />} />
-        <Route path="/signup/:slug" exact render={() => <SignupWorkflows />} />
         <Route
-          path="/callback/:slug"
+          path="/authcallback"
           exact
-          render={() => <SignupWorkflows />}
+          render={() => <MapComponent />}
         />
       </Switch>
     </div>

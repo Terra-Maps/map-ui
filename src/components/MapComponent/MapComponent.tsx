@@ -365,17 +365,6 @@ function MapComponent() {
               >
                 Login
               </button>
-              <button
-                className="signup-button"
-                onClick={(e) =>
-                  toggleModal({
-                    openModal: true,
-                    modalConfig: { type: "signup" },
-                  })
-                }
-              >
-                Signup
-              </button>
             </>
           ) : (
             <img

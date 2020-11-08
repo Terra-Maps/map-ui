@@ -17,9 +17,9 @@ const Reducers = (dispatch: any) => ({
   setWalletInfo: async (walletPrivateKey: string) => {
     return new Promise<void>(async (resolve, reject) => {
       const algodclient = new algosdk.Algodv2(
-        config.algorand.token,
-        config.algorand.baseServer,
-        config.algorand.port
+        config.algorand.TOKEN,
+        config.algorand.BASE_SERVER,
+        config.algorand.PORT
       );
       let myAccount = algosdk.mnemonicToSecretKey(walletPrivateKey);
       let walletInfo = await algodclient
