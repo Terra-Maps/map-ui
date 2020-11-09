@@ -12,5 +12,6 @@ export const actionInitialValue = {
   setMapLocation: (lat: number, lng: number, zoom: number) => {},
   setWalletStep: (walletStep: number) => {},
   setWalletInfo: (walletPrivateKey: string) => new Promise<void>((resolve, reject) => {}),
-  fetchUser: async () => {}
+  fetchUser: async () => {},
+  resetUser: async () => {}
 };

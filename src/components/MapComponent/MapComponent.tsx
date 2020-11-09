@@ -15,7 +15,7 @@ import algosdk from "algosdk";
 import Geohash from "latlon-geohash";
 import makeBlockie from "ethereum-blockies-base64";
 import { ApiService } from "../../service";
-import { AddPointForm, ViewPointForm } from "./components";
+import { AddPointForm, ProfileDropdown, ViewPointForm } from "./components";
 
 mapboxgl.accessToken = config.maps.MAP_BOX_ACCESS_TOKEN;
 
@@ -36,6 +36,8 @@ function MapComponent() {
   const [addPOIMode, setAddPOIMode] = useState<boolean>(false);
   const [sidebarAddPOIMode, setSidebarAddPOIMode] = useState<boolean>(true);
   const [viewPOIConfig, setViewPOIConfig] = useState<any>(null);
+  const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
+
 
   useEffect(() => {
     const newMap = new mapboxgl.Map({
@@ -368,13 +370,17 @@ function MapComponent() {
             </>
           ) : (
             <img
-              src={user?.provider_profile?.avatar_url}
+              src={user?.picture}
               alt="address-blockie"
               className="user-profile-blockie-icon"
               height={42}
               width={42}
               loading="lazy"
+              onClick={e => setShowProfileDropdown(true)}
             />
+          )}
+          {showProfileDropdown && (
+            <ProfileDropdown setShowDropdown={setShowProfileDropdown} />
           )}
         </div>
         {sidebarAddPOIMode
