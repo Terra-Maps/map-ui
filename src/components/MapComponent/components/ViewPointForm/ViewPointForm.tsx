@@ -3,7 +3,7 @@ import { FiX } from "react-icons/fi";
 import "./ViewPointForm.scss";
 import IViewPointFormProps from "./model";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { VotingClaim } from "./components";
+import { VotingClaim, VotingOngoing } from "./components";
 
 const ViewPointForm: FC<IViewPointFormProps> = ({
   viewPOIConfig,
@@ -61,7 +61,7 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
             </div>
           </div>
         </div>
-        {!viewPOIConfig.vf && <VotingClaim viewPOIConfig={viewPOIConfig} />}
+        {!viewPOIConfig.vf && <VotingOngoing viewPOIConfig={viewPOIConfig} />}
       </div>
     </div>
   );

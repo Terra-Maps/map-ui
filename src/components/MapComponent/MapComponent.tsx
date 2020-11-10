@@ -76,7 +76,7 @@ function MapComponent() {
   };
 
   const loadMapPoi = async (map: mapboxgl.Map) => {
-    const base64Chikara = btoa("chikaara");
+    const base64Chikara = btoa("terra");
     const populateMapPoints = await populateMapPoint(base64Chikara);
     if (map) {
       populateMapPoints.map((points: any) => {
@@ -106,7 +106,7 @@ function MapComponent() {
     let indexerClient = new algosdk.Indexer(token, baseServer, port);
     let assetInfo = await indexerClient
       .searchForTransactions()
-      .assetID(12743544)
+      .applicationID(13089340)
       .notePrefix(base64Chikara)
       .do();
     console.log(assetInfo);
@@ -123,7 +123,9 @@ function MapComponent() {
     console.log(pointGeoPoints);
     const pointLatLong = pointGeoPoints.map((point: any) => {
       try {
-        return { ...point, latlng: Geohash.decode(point.gh) };
+        let geohash = point.gh;
+        let origGeohash = geohash.replaceAll('o', '')
+        return { ...point, latlng: Geohash.decode(origGeohash) };
       } catch (err) {
         console.log(err);
       }

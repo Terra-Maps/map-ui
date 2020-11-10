@@ -8,6 +8,7 @@ import IAddPointForm from "./model";
 import algosdk from "algosdk";
 import config from "../../../../config";
 import { BeatLoader } from "react-spinners";
+import Geohash from "latlon-geohash";
 
 const AddPointForm: FC<IAddPointForm> = ({
   addPOIConfig,
@@ -25,17 +26,25 @@ const AddPointForm: FC<IAddPointForm> = ({
   const [addPoiLoader, setAddPoiLoader] = useState<boolean>(false);
 
   const addPOI = async () => {
+    let newGeohash = addPOIConfig.geohash
     setAddPoiLoader(true);
+    console.log(addPOIConfig.geohash.length, 'addPOIConfig.geohash')
+    if(addPOIConfig.geohash.length < 12) {
+      let geoLen = addPOIConfig.geohash.length
+      var paddingLen = 12 - geoLen;
+      newGeohash = addPOIConfig.geohash + "o".repeat(paddingLen)
+      console.log(newGeohash, 'newGeohash')
+    }
     const poi = {
       nm: poiName,
-      gh: addPOIConfig.geohash,
+      gh: newGeohash,
       tp: poiType,
       ad: poiAddress,
       ds: poiDescription,
       st: poiStakeAmount,
     };
     console.log(poi)
-    const noteField = `chikaara-${addPOIConfig.geohash}-${JSON.stringify(poi)}`;
+    const noteField = `terra-${newGeohash}-${JSON.stringify(poi)}`;
     var noteFieldUInt = stringToUint(noteField);
     console.log(walletAccount, noteField);
     const algodclient = new algosdk.Algodv2(
@@ -45,19 +54,19 @@ const AddPointForm: FC<IAddPointForm> = ({
     );
     let params = await algodclient.getTransactionParams().do();
     let sender = walletAccount.addr;
-    let recipient = sender;
-    let revocationTarget = undefined;
-    let closeRemainderTo = undefined;
-    let amount = 0;
-    let xtxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+    const index = 13089340
+    let appArgs = [stringToUint("create_poi"),stringToUint(newGeohash)];
+    let xtxn = algosdk.makeApplicationNoOpTxn(
       sender,
-      recipient,
-      closeRemainderTo,
-      revocationTarget,
-      amount,
+      params,
+      index,
+      appArgs,
+      undefined,
+      undefined,
+      undefined,
       noteFieldUInt,
-      12743544,
-      params
+      undefined,
+      undefined
     );
     // Must be signed by the account sending the asset
     const rawSignedTxn = xtxn.signTxn(walletAccount.sk);
