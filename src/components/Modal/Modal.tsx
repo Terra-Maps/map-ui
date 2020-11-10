@@ -3,7 +3,7 @@ import "./Modal.scss";
 import { StateContext, ActionContext } from "../../hooks";
 import { IActionModel, IStateModel } from "../../model/hooks.model";
 import { FiX } from "react-icons/fi";
-import { Login, WalletConfiguration, WalletDetails } from "..";
+import { Login, UserDetails, WalletConfiguration, WalletDetails } from "..";
 
 function Modal() {
   const { toggleModal } = useContext<IActionModel>(ActionContext);
@@ -29,6 +29,7 @@ function Modal() {
           {modalConfig.type === "wallet" && <WalletConfiguration />}
           {modalConfig.type === "wallet-details" && <WalletDetails />}
           {modalConfig.type === "login" && <Login />}
+          {modalConfig.type === "user-details" && <UserDetails />}
         </div>
       </div>
     </div>
