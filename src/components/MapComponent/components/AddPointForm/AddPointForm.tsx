@@ -9,6 +9,10 @@ import algosdk from "algosdk";
 import config from "../../../../config";
 import { BeatLoader } from "react-spinners";
 import Geohash from "latlon-geohash";
+import {
+  handleSignCallbackService,
+  handleSignTransaction,
+} from "../../../../service/OreService";
 
 const AddPointForm: FC<IAddPointForm> = ({
   addPOIConfig,
@@ -16,24 +20,31 @@ const AddPointForm: FC<IAddPointForm> = ({
   setAddPOIConfig,
   refreshMap,
 }) => {
-  const { walletAccount } = useContext<IStateModel>(StateContext);
-
+  const { walletAccount, user } = useContext<IStateModel>(StateContext);
+  console.log("useruser", user);
   const [poiType, setPoiType] = useState<string>("road");
-  const [poiName, setPoiName] = useState<string>("");
-  const [poiAddress, setPoiAddress] = useState<string>("");
-  const [poiDescription, setPoiDescription] = useState<string>("");
+  const [poiName, setPoiName] = useState<string>("asdf");
+  const [poiAddress, setPoiAddress] = useState<string>("asdf");
+  const [poiDescription, setPoiDescription] = useState<string>("asdf");
   const [poiStakeAmount, setPoiStakeAmount] = useState<string>("0");
   const [addPoiLoader, setAddPoiLoader] = useState<boolean>(false);
 
   const addPOI = async () => {
-    let newGeohash = addPOIConfig.geohash
+    const { permissions } = user;
+    const permission = permissions[0];
+    let provider = permission.externalWalletType;
+
+    let { accountName } = user;
+    provider = provider || "oreid"; // default to ore id
+
+    let newGeohash = addPOIConfig.geohash;
     setAddPoiLoader(true);
-    console.log(addPOIConfig.geohash.length, 'addPOIConfig.geohash')
-    if(addPOIConfig.geohash.length < 12) {
-      let geoLen = addPOIConfig.geohash.length
+    console.log(addPOIConfig.geohash.length, "addPOIConfig.geohash");
+    if (addPOIConfig.geohash.length < 12) {
+      let geoLen = addPOIConfig.geohash.length;
       var paddingLen = 12 - geoLen;
-      newGeohash = addPOIConfig.geohash + "o".repeat(paddingLen)
-      console.log(newGeohash, 'newGeohash')
+      newGeohash = addPOIConfig.geohash + "o".repeat(paddingLen);
+      console.log(newGeohash, "newGeohash");
     }
     const poi = {
       nm: poiName,
@@ -43,7 +54,7 @@ const AddPointForm: FC<IAddPointForm> = ({
       ds: poiDescription,
       st: poiStakeAmount,
     };
-    console.log(poi)
+    console.log(poi);
     const noteField = `terra-${newGeohash}-${JSON.stringify(poi)}`;
     var noteFieldUInt = stringToUint(noteField);
     console.log(walletAccount, noteField);
@@ -53,9 +64,10 @@ const AddPointForm: FC<IAddPointForm> = ({
       config.algorand.PORT
     );
     let params = await algodclient.getTransactionParams().do();
-    let sender = walletAccount.addr;
-    const index = 13089340
-    let appArgs = [stringToUint("create_poi"),stringToUint(newGeohash)];
+    let sender = permission.chainAccount;
+    const index = 13089340;
+    let appArgs = [stringToUint("create_poi"), stringToUint(newGeohash)];
+
     let xtxn = algosdk.makeApplicationNoOpTxn(
       sender,
       params,
@@ -68,10 +80,39 @@ const AddPointForm: FC<IAddPointForm> = ({
       undefined,
       undefined
     );
+
+    let txn = {
+      type: "appl",
+      from: sender,
+      fee: params.minFee,
+      firstRound: params.lastRound,
+      lastRound: params.lastRound + 1000,
+      genesisID: params.genesisId,
+      genesisHash: params.genesisHash,
+      appIndex: index,
+      appOnComplete: 0,
+      appArgs: appArgs,
+      appAccounts: undefined,
+      appForeignApps: undefined,
+      appForeignAssets: undefined,
+      note: noteFieldUInt,
+      lease: undefined,
+      reKeyTo: undefined,
+    };
+
+    await handleSignTransaction(
+      provider,
+      accountName,
+      permission.chainAccount,
+      permission.chainNetwork,
+      txn,
+      user
+    );
+
     // Must be signed by the account sending the asset
-    const rawSignedTxn = xtxn.signTxn(walletAccount.sk);
-    let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
-    console.log("Transaction : " + xtx.txId);
+    // const rawSignedTxn = xtxn.signTxn(walletAccount.sk);
+    // let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
+    // console.log("Transaction : " + xtx.txId);
     setAddPoiLoader(false);
     setShowLeftSideBar(false);
     refreshMap();
@@ -85,6 +126,17 @@ const AddPointForm: FC<IAddPointForm> = ({
     }
     return new Uint8Array(uintArray);
   }
+
+  const handleSignCallback = async () => {
+    const urlPath = `${window.location.origin}${window.location.pathname}`;
+    if (urlPath === `${window.location.origin}/signcallback`) {
+      await handleSignCallbackService();
+    }
+  };
+
+  React.useEffect(() => {
+    handleSignCallback();
+  });
 
   return (
     <div className="AddPointForm">
@@ -163,11 +215,7 @@ const AddPointForm: FC<IAddPointForm> = ({
           </div>
         </div>
         <div className="add-poi-form-footer">
-          <button
-            className="add-poi-button"
-            disabled={!walletAccount}
-            onClick={addPOI}
-          >
+          <button className="add-poi-button" disabled={!user} onClick={addPOI}>
             {addPoiLoader ? (
               <BeatLoader size={10} color={"#fff"} loading={true} />
             ) : (

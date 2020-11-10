@@ -21,6 +21,10 @@ function UserDetails() {
         <div className="wallet-details-item-title">Username:</div>
         <div className="wallet-details-item-value">{user.username}</div>
       </div>
+      <div className="wallet-details-item">
+        <div className="wallet-details-item-title">Algorand Address:</div>
+        <div className="wallet-details-item-value">{user.permissions[0].chainAccount}</div>
+      </div>
       {user.email && (
         <div className="wallet-details-item">
           <div className="wallet-details-item-title">Email:</div>

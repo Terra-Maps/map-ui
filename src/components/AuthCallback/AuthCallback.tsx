@@ -15,7 +15,7 @@ function AuthCallback() {
   useEffect(() => {
     const authCallback = async () => {
       const userInfo = await OreService.handleAuthCallback();
-      console.log(userInfo);
+      console.log(userInfo, 'userInfo');
       if(userInfo) {
         fetchUser(userInfo)
       }
