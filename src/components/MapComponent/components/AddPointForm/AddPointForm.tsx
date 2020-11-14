@@ -67,19 +67,34 @@ const AddPointForm: FC<IAddPointForm> = ({
     let sender = permission.chainAccount;
     const index = 13089340;
     let appArgs = [stringToUint("create_poi"), stringToUint(newGeohash)];
+    let appArgsNormal = ["create_poi", addPOIConfig.geohash];
 
-    let xtxn = algosdk.makeApplicationNoOpTxn(
-      sender,
-      params,
-      index,
-      appArgs,
-      undefined,
-      undefined,
-      undefined,
-      noteFieldUInt,
-      undefined,
-      undefined
-    );
+    // let xtxn = algosdk.makeApplicationNoOpTxn(
+    //   sender,
+    //   params,
+    //   index,
+    //   appArgs,
+    //   undefined,
+    //   undefined,
+    //   undefined,
+    //   noteFieldUInt,
+    //   undefined,
+    //   undefined
+    // );
+
+    let appArgsNew: any = [];
+    appArgs.forEach((arg: any) => {
+      appArgsNew.push([...arg]);
+    });
+
+    let appArgsNewNormal: any = [];
+    appArgs.forEach((arg: any) => {
+      appArgsNewNormal.push(btoa(arg));
+    });
+
+    let newNote: any = [];
+
+    console.log("bufferArgs", appArgsNew);
 
     let txn = {
       type: "appl",
@@ -91,14 +106,16 @@ const AddPointForm: FC<IAddPointForm> = ({
       genesisHash: params.genesisHash,
       appIndex: index,
       appOnComplete: 0,
-      appArgs: appArgs,
+      appArgs: appArgsNewNormal,
       appAccounts: undefined,
       appForeignApps: undefined,
       appForeignAssets: undefined,
-      note: noteFieldUInt,
+      note: btoa(noteField),
       lease: undefined,
       reKeyTo: undefined,
     };
+
+    console.log("JSONApp", JSON.stringify(txn));
 
     await handleSignTransaction(
       provider,

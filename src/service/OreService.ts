@@ -48,7 +48,7 @@ export const handleSignCallbackService = async () => {
   const signResponse = await oreId.handleSignResponse(window.location.href);
   const { signedTransaction, state, transactionId, errors } = signResponse;
   if (!errors) {
-    console.log(signedTransaction, state, transactionId, "signedDataStuff");
+    return [signedTransaction, state, transactionId];
   } else {
     console.log("error", errors);
   }
@@ -96,10 +96,10 @@ export const handleSignTransaction = async (
     console.log(signResponse, "signResponse");
     // if the sign responds with a signUrl, then redirect the browser to it to call the signing flow
     let { signUrl } = signResponse;
-    if (signUrl) {
-      // redirect browser to signUrl
-      window.location = signUrl;
-    }
+    // if (signUrl) {
+    //   // redirect browser to signUrl
+    //   window.location = signUrl;
+    // }
   } catch (error) {
     console.log(error);
   }
