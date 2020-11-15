@@ -25,6 +25,6 @@ export interface IActionModel {
   setMapLocation: (lat: number, lng: number, zoom: number) => void;
   setWalletStep: (walletStep: number) => void;
   setWalletInfo: (walletPrivateKey: string) => Promise<void>;
-  fetchUser: (userInfo?: any) => void
+  fetchUser: () => void
   resetUser: () => void
 }
