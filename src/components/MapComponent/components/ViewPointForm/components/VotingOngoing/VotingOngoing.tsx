@@ -26,7 +26,12 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
       config.algorand.INDEXER_SERVER,
       ""
     );
-    let accountInfo = await indexerClient.lookupAccountByID(account).do();
+    let accountInfo;
+    try {
+      accountInfo = await indexerClient.lookupAccountByID(account).do();
+    } catch (error) {
+      console.log("eer", error);
+    }
     let value = accountInfo["account"]["apps-local-state"];
     let objects = new Array(...value);
 
@@ -43,7 +48,13 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
     console.log("viewUserPOIData", "newObj", newObj);
     const str = base64ToHex(newObj[0].value.bytes);
     console.log("viewUserPOIData", str);
-    var arr = str.split("2d");
+    var arr = [];
+    var creatorAdd = str.substring(0, 64);
+    arr.push(creatorAdd);
+    console.log("creatorAdd", creatorAdd);
+    var data = str.substring(66, str.length).split("2d");
+    console.log("data", data);
+    arr = arr.concat(data);
     console.log("viewUserPOIData", arr);
 
     return arr;
@@ -53,8 +64,8 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
     try {
       const response = await viewUserPOIData(
         walletAccount.addr,
-        13133763,
-        viewPOIConfig.gh
+        13164862,
+        viewPOIConfig.gh.replaceAll("o", "")
       );
       setUserPOIData(response);
       console.log("res", response);
@@ -79,7 +90,7 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
 
   const votePOI = async (vote: string) => {
     //  let newGeohash = addPaddingToGeohash(viewPOIConfig.gh)
-    let newGeohash = viewPOIConfig.gh;
+    let newGeohash = viewPOIConfig.gh.replaceAll("o", "");
     console.log(viewPOIConfig.gh.length, "viewPOIConfig.gh");
     const algodclient = new algosdk.Algodv2(
       config.algorand.TOKEN,
@@ -88,13 +99,13 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
     );
     let params = await algodclient.getTransactionParams().do();
     let sender = walletAccount.addr;
-    const index = 13133763;
+    const index = 13164862;
 
     const hash = sha256(vote + voteSecretSalt).slice(0, 16);
     console.log("hash");
     let appArgs = [
       stringToUint("vote_poi"),
-      stringToUint(viewPOIConfig.gh),
+      stringToUint(newGeohash),
       stringToUint(hash),
     ];
     let appAccounts = [viewPOIConfig.creatorAddress];
@@ -110,6 +121,7 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
     let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
     console.log("Transaction : " + xtx.txId);
     saveSalt();
+    fetchUserPOIDataCallback();
   };
 
   const saveSalt = () => {
@@ -197,7 +209,7 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
               </button>
               <button
                 className="voting-button incorrect-button"
-                onClick={(e) => votePOI("no")}
+                onClick={(e) => votePOI("noo")}
               >
                 Incorrect
               </button>

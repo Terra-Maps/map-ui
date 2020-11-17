@@ -69,7 +69,7 @@ const AddPointForm: FC<IAddPointForm> = ({
     );
     let params = await algodclient.getTransactionParams().do();
     console.log(walletAccount, "walletAccount");
-    const index = 13133763;
+    const index = 13164862;
     let appArgs = [
       stringToUint("create_poi"),
       stringToUint(addPOIConfig.geohash),
@@ -137,9 +137,11 @@ const AddPointForm: FC<IAddPointForm> = ({
     const rawSignedTxn = xtxn.signTxn(walletAccount.sk);
     let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
     console.log("Transaction : " + xtx.txId);
+    // setAddPoiLoader(false);
+    // setShowLeftSideBar(false);
+    refreshMap();
     setAddPoiLoader(false);
     setShowLeftSideBar(false);
-    refreshMap();
   };
 
   function stringToUint(field: string) {

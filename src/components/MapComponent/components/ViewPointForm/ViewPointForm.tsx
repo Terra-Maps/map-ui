@@ -23,7 +23,7 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
     console.log("viewpOI ", viewPOIConfig.creatorAddress);
     const response = await fetchPOIData(
       viewPOIConfig.creatorAddress,
-      13133763,
+      13164862,
       viewPOIConfig.gh
     );
     console.log("res", response);
@@ -40,7 +40,12 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
       config.algorand.INDEXER_SERVER,
       ""
     );
-    let accountInfo = await indexerClient.lookupAccountByID(account).do();
+    let accountInfo;
+    try {
+      accountInfo = await indexerClient.lookupAccountByID(account).do();
+    } catch (error) {
+      console.log("eer", error);
+    }
     let value = accountInfo["account"]["apps-local-state"];
     let objects = new Array(...value);
 
@@ -121,7 +126,7 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
             </div>
           </div>
         </div>
-        {!viewPOIConfig.vf && POICreationTime < POICreationTime + 259200 ? (
+        {/* {!viewPOIConfig.vf && POICreationTime < POICreationTime + 259200 ? (
           <VotingOngoing
             viewPOIConfig={viewPOIConfig}
             poiCreationTime={POICreationTime}
@@ -142,7 +147,19 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
             viewPOIConfig={viewPOIConfig}
             poiCreationTime={POICreationTime}
           />
-        ) : null}
+        ) : null} */}
+        <VotingOngoing
+          viewPOIConfig={viewPOIConfig}
+          poiCreationTime={POICreationTime}
+        />
+        <VotingReveal
+          viewPOIConfig={viewPOIConfig}
+          poiCreationTime={POICreationTime}
+        />
+        <VotingClaim
+          viewPOIConfig={viewPOIConfig}
+          poiCreationTime={POICreationTime}
+        />
       </div>
     </div>
   );

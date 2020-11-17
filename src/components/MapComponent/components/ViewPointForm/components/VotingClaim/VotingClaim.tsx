@@ -1,11 +1,116 @@
-import React, { FC } from "react";
+import React, { FC, useCallback, useContext, useEffect, useState } from "react";
 import "./VotingClaim.scss";
 import IVotingClaimProps from "./model";
+import { IStateModel } from "../../../../../../model/hooks.model";
+import { StateContext } from "../../../../../../hooks";
+import algosdk from "algosdk";
+import config from "../../../../../../config";
+import {
+  base64ToHex,
+  convertFromHex,
+  stringToUint,
+} from "../../../../../../utils";
 
 const VotingClaim: FC<IVotingClaimProps> = ({
   viewPOIConfig,
   poiCreationTime,
 }) => {
+  const { walletAccount } = useContext<IStateModel>(StateContext);
+  const [userPOIData, setUserPOIData] = useState<any>();
+
+  const viewUserPOIData = async (account: string, appID: any, geohash: any) => {
+    let newGeohash = viewPOIConfig.gh.replaceAll("o", "");
+    let indexerClient = new algosdk.Indexer(
+      config.algorand.TOKEN,
+      config.algorand.INDEXER_SERVER,
+      ""
+    );
+    let accountInfo;
+    try {
+      accountInfo = await indexerClient.lookupAccountByID(account).do();
+    } catch (error) {
+      console.log("eer", error);
+    }
+    let value = accountInfo["account"]["apps-local-state"];
+    let objects = new Array(...value);
+
+    var res = objects.filter(function (v) {
+      return v["id"] == appID;
+    });
+    console.log("viewUserPOIData", JSON.stringify(res, undefined, 2));
+    var obj = res[0]["key-value"];
+    var bs64 = btoa(newGeohash);
+    console.log("viewUserPOIData", "base", bs64, "geohash", geohash);
+    const newObj = obj.filter(function (v: any) {
+      return v["key"] == bs64;
+    });
+    console.log("viewUserPOIData", "newObj", newObj);
+    const str = base64ToHex(newObj[0].value.bytes);
+    console.log("viewUserPOIData", str);
+    var arr = [];
+    var creatorAdd = str.substring(0, 64);
+    arr.push(creatorAdd);
+    const data = str.substring(66, str.length).split("2d");
+    arr = arr.concat(data);
+
+    console.log("viewUserPOIData", arr);
+
+    return arr;
+  };
+
+  const fetchUserPOIDataCallback = useCallback(async () => {
+    try {
+      const response = await viewUserPOIData(
+        walletAccount.addr,
+        13164862,
+        viewPOIConfig.gh.replaceAll("o", "")
+      );
+      setUserPOIData(response);
+      console.log("res", response);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [viewPOIConfig, walletAccount]);
+
+  const claimMoney = async () => {
+    //  let newGeohash = addPaddingToGeohash(viewPOIConfig.gh)
+    console.log(viewPOIConfig.gh.length, "viewPOIConfig.gh");
+    const algodclient = new algosdk.Algodv2(
+      config.algorand.TOKEN,
+      config.algorand.BASE_SERVER,
+      config.algorand.PORT
+    );
+    let params = await algodclient.getTransactionParams().do();
+    let sender = walletAccount.addr;
+    const index = 13164862;
+
+    console.log("hash");
+    let appArgs = [
+      stringToUint("withdraw"),
+      stringToUint(viewPOIConfig.gh.replaceAll("o", "")),
+    ];
+    console.log("appArgs", "withdraw", viewPOIConfig.gh);
+    let appAccounts = [
+      viewPOIConfig.creatorAddress,
+      viewPOIConfig.creatorAddress,
+    ];
+    let txn1 = algosdk.makeApplicationNoOpTxn(
+      sender,
+      params,
+      index,
+      appArgs,
+      appAccounts
+    );
+    // Must be signed by the account sending the asset
+    const rawSignedTxn = txn1.signTxn(walletAccount.sk);
+    let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
+    console.log("Transaction : " + xtx.txId);
+  };
+
+  useEffect(() => {
+    fetchUserPOIDataCallback();
+  }, [fetchUserPOIDataCallback]);
+
   return (
     <div className="VotingClaim">
       <div className="view-poi-voting-claim-details">
@@ -26,7 +131,9 @@ const VotingClaim: FC<IVotingClaimProps> = ({
           </div>
         </div>
         <div className="view-poi-voting-claim-button-container">
-          <button className="claim-button">Claim</button>
+          <button onClick={claimMoney} className="claim-button">
+            Claim
+          </button>
         </div>
       </div>
     </div>

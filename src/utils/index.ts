@@ -29,6 +29,17 @@ export const convertToHex = (address: string) => {
   return result;
 };
 
+export const convertFromHex = (str: string) => {
+  let result = "";
+  for (let i = 0; i < str.length; i += 2) {
+    const hex = String.fromCharCode(
+      parseInt("0x" + str.substring(i, i + 2), 16)
+    );
+    result += hex;
+  }
+  return result;
+};
+
 export const base64ToHex = (str: string) => {
   const raw = atob(str);
   let result = "";
@@ -37,4 +48,13 @@ export const base64ToHex = (str: string) => {
     result += hex.length === 2 ? hex : "0" + hex;
   }
   return result;
+};
+
+export const stringToUint = (field: string) => {
+  const charList = field.split("");
+  const uintArray = [];
+  for (var i = 0; i < charList.length; i++) {
+    uintArray.push(charList[i].charCodeAt(0));
+  }
+  return new Uint8Array(uintArray);
 };
