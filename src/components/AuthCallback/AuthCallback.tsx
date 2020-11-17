@@ -17,7 +17,7 @@ function AuthCallback() {
       const userInfo = await OreService.handleAuthCallback();
       console.log(userInfo, 'userInfo');
       if(userInfo) {
-        fetchUser(userInfo)
+        // fetchUser(userInfo)
       }
       history.push("/");
     }

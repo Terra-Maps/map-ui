@@ -2,7 +2,7 @@ import Actions from "./Actions";
 import { IModalModel } from "../model/hooks.model";
 import config from "../config";
 import algosdk from "algosdk";
-import { OreService } from "../service";
+import { ApiService, OreService } from "../service";
 
 const Reducers = (dispatch: any) => ({
   toggleModal: (modal: IModalModel) => {
@@ -40,23 +40,18 @@ const Reducers = (dispatch: any) => ({
       resolve();
     });
   },
-  fetchUser: async (userInfo?: any) => {
-    let userInfoNew: any = null;
-    if(!userInfo) {
-      userInfoNew = await OreService.loadUserAfterLogin();
-    } else {
-      userInfoNew = userInfo;
-    }
-    console.log(userInfoNew);
-    if (userInfoNew.accountName) {
-      dispatch({ type: Actions.SET_USER, user: userInfoNew });
+  fetchUser: async () => {
+    const response = await ApiService.fetchUser("1234");
+    console.log(response);
+    if (response.user) {
+      dispatch({ type: Actions.SET_USER, user: response.user });
       const modal = {
         openModal: false,
         modalConfig: { type: "" },
       };
       dispatch({ type: Actions.TOGGLE_MODAL, modal });
     } else {
-      dispatch({ type: Actions.SET_USER, user: null });
+      localStorage.removeItem("jwt-token");
     }
   },
   resetUser: async () => {

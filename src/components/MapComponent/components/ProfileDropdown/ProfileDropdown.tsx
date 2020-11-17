@@ -3,7 +3,7 @@ import "./ProfileDropdown.scss";
 import IProfileDropdownProps from "./model";
 import { ActionContext } from "../../../../hooks";
 import { IActionModel } from "../../../../model/hooks.model";
-import { OreService } from "../../../../service";
+import { ApiService } from "../../../../service";
 
 const ProfileDropdown: React.FC<IProfileDropdownProps> = ({
   setShowDropdown,
@@ -12,9 +12,10 @@ const ProfileDropdown: React.FC<IProfileDropdownProps> = ({
 
   const [logoutText, setLogoutText] = useState("Logout");
 
-  const logout = () => {
+  const logout = async () => {
     setLogoutText("Logging out...");
-    OreService.logoutOre();
+    await ApiService.logout();
+    localStorage.removeItem("jwt-token");
     resetUser();
     setLogoutText("Logout");
     setShowDropdown(false);

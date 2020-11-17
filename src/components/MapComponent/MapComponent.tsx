@@ -373,10 +373,21 @@ function MapComponent() {
               >
                 Login
               </button>
+              <button
+                className="signup-button"
+                onClick={(e) =>
+                  toggleModal({
+                    openModal: true,
+                    modalConfig: { type: "signup" },
+                  })
+                }
+              >
+                Signup
+              </button>
             </>
           ) : (
             <img
-              src={user?.picture}
+              src={user?.provider_profile?.avatar_url}
               alt="address-blockie"
               className="user-profile-blockie-icon"
               height={42}
