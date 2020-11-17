@@ -3,7 +3,10 @@ import "./VotingReveal.scss";
 import IVotingRevealProps from "./model";
 import { RadioGroup, Radio } from "react-radio-group";
 
-const VotingReveal: FC<IVotingRevealProps> = ({ viewPOIConfig }) => {
+const VotingReveal: FC<IVotingRevealProps> = ({
+  viewPOIConfig,
+  poiCreationTime,
+}) => {
   const [selectedVotingOption, setSelectedVotingOption] = useState<string>(
     "correct"
   );

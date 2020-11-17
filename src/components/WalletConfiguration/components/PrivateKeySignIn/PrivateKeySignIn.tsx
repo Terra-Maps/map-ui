@@ -4,11 +4,12 @@ import { IActionModel } from "../../../../model/hooks.model";
 import "./PrivateKeySignIn.scss";
 import { BeatLoader } from "react-spinners";
 
-
 function PrivateKeySignIn() {
   const { setWalletInfo } = useContext<IActionModel>(ActionContext);
 
-  const [walletPrivateKey, setWalletPrivateKey] = useState<string>("");
+  const [walletPrivateKey, setWalletPrivateKey] = useState<string>(
+    "visit problem govern plug ecology turkey school maple total chef deputy life space fog talent fall mention chuckle crane town wrestle worry empty able rate"
+  );
   const [walletLoader, setWalletLoader] = useState<boolean>(false);
 
   const componentIsMounted = useRef(true);
@@ -20,12 +21,12 @@ function PrivateKeySignIn() {
   }, []);
 
   const loadWallet = async () => {
-    setWalletLoader(true)
-    await setWalletInfo(walletPrivateKey)
-    if(componentIsMounted.current) {
-      setWalletLoader(false)
+    setWalletLoader(true);
+    await setWalletInfo(walletPrivateKey);
+    if (componentIsMounted.current) {
+      setWalletLoader(false);
     }
-  }
+  };
 
   return (
     <div className="PrivateKeySignIn">
@@ -40,14 +41,12 @@ function PrivateKeySignIn() {
         onChange={(e) => setWalletPrivateKey(e.target.value)}
         placeholder="Algorand Private Key here"
       ></textarea>
-      <button
-        className="private-key-button"
-        type="button"
-        onClick={loadWallet}
-      >
+      <button className="private-key-button" type="button" onClick={loadWallet}>
         {walletLoader ? (
           <BeatLoader size={10} color={"#fff"} loading={true} />
-        ) : "Use this wallet"}
+        ) : (
+          "Use this wallet"
+        )}
       </button>
     </div>
   );

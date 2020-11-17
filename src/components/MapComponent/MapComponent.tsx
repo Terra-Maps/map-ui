@@ -38,7 +38,6 @@ function MapComponent() {
   const [viewPOIConfig, setViewPOIConfig] = useState<any>(null);
   const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
 
-
   useEffect(() => {
     const newMap = new mapboxgl.Map({
       container: mapContainer,
@@ -108,15 +107,20 @@ function MapComponent() {
     let indexerClient = new algosdk.Indexer(token, baseServer, port);
     let assetInfo = await indexerClient
       .searchForTransactions()
-      .applicationID(13089340)
+      .applicationID(13133763)
       .notePrefix(base64Chikara)
       .do();
     console.log(assetInfo);
     const pointGeoPoints = assetInfo.transactions.map((transaction: any) => {
       try {
-        return atob(transaction.note).split("-")[2]
-          ? JSON.parse(atob(transaction.note).split("-")[2])
-          : undefined;
+        if (atob(transaction.note).split("-")[3]) {
+          const data = JSON.parse(atob(transaction.note).split("-")[3]);
+          data.creatorAddress = atob(transaction.note).split("-")[2];
+
+          return data;
+        } else {
+          return undefined;
+        }
       } catch (err) {
         console.log(err);
         return undefined;
@@ -126,7 +130,7 @@ function MapComponent() {
     const pointLatLong = pointGeoPoints.map((point: any) => {
       try {
         let geohash = point.gh;
-        let origGeohash = geohash.replaceAll('o', '')
+        let origGeohash = geohash.replaceAll("o", "");
         return { ...point, latlng: Geohash.decode(origGeohash) };
       } catch (err) {
         console.log(err);
@@ -378,7 +382,7 @@ function MapComponent() {
               height={42}
               width={42}
               loading="lazy"
-              onClick={e => setShowProfileDropdown(true)}
+              onClick={(e) => setShowProfileDropdown(true)}
             />
           )}
           {showProfileDropdown && (

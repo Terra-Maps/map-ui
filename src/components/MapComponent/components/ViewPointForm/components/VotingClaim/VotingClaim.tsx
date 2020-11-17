@@ -2,9 +2,10 @@ import React, { FC } from "react";
 import "./VotingClaim.scss";
 import IVotingClaimProps from "./model";
 
-const VotingClaim: FC<IVotingClaimProps> = ({ viewPOIConfig }) => {
-
-
+const VotingClaim: FC<IVotingClaimProps> = ({
+  viewPOIConfig,
+  poiCreationTime,
+}) => {
   return (
     <div className="VotingClaim">
       <div className="view-poi-voting-claim-details">

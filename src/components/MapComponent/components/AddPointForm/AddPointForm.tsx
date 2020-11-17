@@ -13,6 +13,7 @@ import {
   handleSignCallbackService,
   handleSignTransaction,
 } from "../../../../service/OreService";
+import { convertToHex } from "../../../../utils";
 
 const AddPointForm: FC<IAddPointForm> = ({
   addPOIConfig,
@@ -22,20 +23,20 @@ const AddPointForm: FC<IAddPointForm> = ({
 }) => {
   const { walletAccount, user } = useContext<IStateModel>(StateContext);
   console.log("useruser", user);
-  const [poiType, setPoiType] = useState<string>("road");
-  const [poiName, setPoiName] = useState<string>("asdf");
-  const [poiAddress, setPoiAddress] = useState<string>("asdf");
-  const [poiDescription, setPoiDescription] = useState<string>("asdf");
-  const [poiStakeAmount, setPoiStakeAmount] = useState<string>("0");
+  const [poiType, setPoiType] = useState<string>("Jaipur");
+  const [poiName, setPoiName] = useState<string>("Jaipur");
+  const [poiAddress, setPoiAddress] = useState<string>("Jaipur");
+  const [poiDescription, setPoiDescription] = useState<string>("Jaipur");
+  const [poiStakeAmount, setPoiStakeAmount] = useState<string>("233");
   const [addPoiLoader, setAddPoiLoader] = useState<boolean>(false);
 
   const addPOI = async () => {
-    const { permissions } = user;
-    const permission = permissions[0];
-    let provider = permission.externalWalletType;
+    // const { permissions } = user;
+    // const permission = permissions[0];
+    // let provider = permission.externalWalletType;
 
-    let { accountName } = user;
-    provider = provider || "oreid"; // default to ore id
+    // let { accountName } = user;
+    // provider = provider || "oreid"; // default to ore id
 
     let newGeohash = addPOIConfig.geohash;
     setAddPoiLoader(true);
@@ -55,7 +56,10 @@ const AddPointForm: FC<IAddPointForm> = ({
       st: poiStakeAmount,
     };
     console.log(poi);
-    const noteField = `terra-${newGeohash}-${JSON.stringify(poi)}`;
+    let sender = walletAccount.addr;
+    const hexSender = convertToHex(sender);
+    const noteField = `terra-${newGeohash}-${sender}-${JSON.stringify(poi)}`;
+    console.log(noteField, "noteField");
     var noteFieldUInt = stringToUint(noteField);
     console.log(walletAccount, noteField);
     const algodclient = new algosdk.Algodv2(
@@ -64,72 +68,75 @@ const AddPointForm: FC<IAddPointForm> = ({
       config.algorand.PORT
     );
     let params = await algodclient.getTransactionParams().do();
-    let sender = permission.chainAccount;
-    const index = 13089340;
-    let appArgs = [stringToUint("create_poi"), stringToUint(newGeohash)];
-    let appArgsNormal = ["create_poi", addPOIConfig.geohash];
+    console.log(walletAccount, "walletAccount");
+    const index = 13133763;
+    let appArgs = [
+      stringToUint("create_poi"),
+      stringToUint(addPOIConfig.geohash),
+    ];
+    // let appArgsNormal = ["create_poi", addPOIConfig.geohash];
 
-    // let xtxn = algosdk.makeApplicationNoOpTxn(
-    //   sender,
-    //   params,
-    //   index,
-    //   appArgs,
-    //   undefined,
-    //   undefined,
-    //   undefined,
-    //   noteFieldUInt,
-    //   undefined,
-    //   undefined
-    // );
-
-    let appArgsNew: any = [];
-    appArgs.forEach((arg: any) => {
-      appArgsNew.push([...arg]);
-    });
-
-    let appArgsNewNormal: any = [];
-    appArgs.forEach((arg: any) => {
-      appArgsNewNormal.push(btoa(arg));
-    });
-
-    let newNote: any = [];
-
-    console.log("bufferArgs", appArgsNew);
-
-    let txn = {
-      type: "appl",
-      from: sender,
-      fee: params.minFee,
-      firstRound: params.lastRound,
-      lastRound: params.lastRound + 1000,
-      genesisID: params.genesisId,
-      genesisHash: params.genesisHash,
-      appIndex: index,
-      appOnComplete: 0,
-      appArgs: appArgsNewNormal,
-      appAccounts: undefined,
-      appForeignApps: undefined,
-      appForeignAssets: undefined,
-      note: btoa(noteField),
-      lease: undefined,
-      reKeyTo: undefined,
-    };
-
-    console.log("JSONApp", JSON.stringify(txn));
-
-    await handleSignTransaction(
-      provider,
-      accountName,
-      permission.chainAccount,
-      permission.chainNetwork,
-      txn,
-      user
+    let xtxn = algosdk.makeApplicationNoOpTxn(
+      sender,
+      params,
+      index,
+      appArgs,
+      undefined,
+      undefined,
+      undefined,
+      noteFieldUInt,
+      undefined,
+      undefined
     );
 
+    // let appArgsNew: any = [];
+    // appArgs.forEach((arg: any) => {
+    //   appArgsNew.push([...arg]);
+    // });
+
+    // let appArgsNewNormal: any = [];
+    // appArgs.forEach((arg: any) => {
+    //   appArgsNewNormal.push(btoa(arg));
+    // });
+
+    // let newNote: any = [];
+
+    // console.log("bufferArgs", appArgsNew);
+
+    // let txn = {
+    //   type: "appl",
+    //   from: sender,
+    //   fee: params.minFee,
+    //   firstRound: params.lastRound,
+    //   lastRound: params.lastRound + 1000,
+    //   genesisID: params.genesisId,
+    //   genesisHash: params.genesisHash,
+    //   appIndex: index,
+    //   appOnComplete: 0,
+    //   appArgs: appArgsNewNormal,
+    //   appAccounts: undefined,
+    //   appForeignApps: undefined,
+    //   appForeignAssets: undefined,
+    //   note: btoa(noteField),
+    //   lease: undefined,
+    //   reKeyTo: undefined,
+    // };
+
+    // console.log("JSONApp", JSON.stringify(txn));
+
+    // await handleSignTransaction(
+    //   provider,
+    //   accountName,
+    //   permission.chainAccount,
+    //   permission.chainNetwork,
+    //   txn,
+    //   user
+    // );
+
     // Must be signed by the account sending the asset
-    // const rawSignedTxn = xtxn.signTxn(walletAccount.sk);
-    // let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
-    // console.log("Transaction : " + xtx.txId);
+    const rawSignedTxn = xtxn.signTxn(walletAccount.sk);
+    let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
+    console.log("Transaction : " + xtx.txId);
     setAddPoiLoader(false);
     setShowLeftSideBar(false);
     refreshMap();
@@ -232,7 +239,11 @@ const AddPointForm: FC<IAddPointForm> = ({
           </div>
         </div>
         <div className="add-poi-form-footer">
-          <button className="add-poi-button" disabled={!user} onClick={addPOI}>
+          <button
+            className="add-poi-button"
+            disabled={!walletAccount}
+            onClick={addPOI}
+          >
             {addPoiLoader ? (
               <BeatLoader size={10} color={"#fff"} loading={true} />
             ) : (

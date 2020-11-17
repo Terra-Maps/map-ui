@@ -11,6 +11,7 @@ interface IConfig {
     OREID_API_KEY: string;
     ALGORAND_API_KEY: string;
     OREID_URL: string;
+    INDEXER_SERVER: string;
   };
   urls: {
     BASE_URL: string;
@@ -37,6 +38,7 @@ const development: IConfig = {
     OREID_API_KEY: "t_kb2b834f55f6e4bfd82f21d1ceaff7cef",
     ALGORAND_API_KEY: "fmprdjLHAM5gfosJUVND49NtPKHEf8dz4CQu0VTY",
     OREID_URL: "http://service.oreid.io",
+    INDEXER_SERVER: "https://testnet-algorand.api.purestake.io/idx2",
   },
   urls: {
     BASE_URL: process.env.BASE_URL || "http://localhost:3000",
@@ -59,6 +61,7 @@ const production: IConfig = {
     OREID_API_KEY: "t_kb2b834f55f6e4bfd82f21d1ceaff7cef",
     ALGORAND_API_KEY: "fmprdjLHAM5gfosJUVND49NtPKHEf8dz4CQu0VTY",
     OREID_URL: "http://service.oreid.io",
+    INDEXER_SERVER: "https://testnet-algorand.api.purestake.io/idx2",
   },
   urls: {
     BASE_URL: process.env.BASE_URL || "http://localhost:3000",
@@ -81,6 +84,7 @@ const test: IConfig = {
     OREID_API_KEY: "t_kb2b834f55f6e4bfd82f21d1ceaff7cef",
     ALGORAND_API_KEY: "fmprdjLHAM5gfosJUVND49NtPKHEf8dz4CQu0VTY",
     OREID_URL: "http://service.oreid.io",
+    INDEXER_SERVER: "https://testnet-algorand.api.purestake.io/idx2",
   },
   urls: {
     BASE_URL: process.env.BASE_URL || "http://localhost:3000",
