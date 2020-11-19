@@ -23,7 +23,7 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
     console.log("viewpOI ", viewPOIConfig.creatorAddress);
     const response = await fetchPOIData(
       viewPOIConfig.creatorAddress,
-      13164862,
+      13172027,
       viewPOIConfig.gh
     );
     console.log("res", response);
@@ -151,14 +151,17 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
         <VotingOngoing
           viewPOIConfig={viewPOIConfig}
           poiCreationTime={POICreationTime}
+          setShowLeftSideBar={setShowLeftSideBar}
         />
         <VotingReveal
           viewPOIConfig={viewPOIConfig}
           poiCreationTime={POICreationTime}
+          setShowLeftSideBar={setShowLeftSideBar}
         />
         <VotingClaim
           viewPOIConfig={viewPOIConfig}
           poiCreationTime={POICreationTime}
+          setShowLeftSideBar={setShowLeftSideBar}
         />
       </div>
     </div>

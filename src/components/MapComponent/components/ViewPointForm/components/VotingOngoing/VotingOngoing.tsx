@@ -5,19 +5,21 @@ import { addPaddingToGeohash, randomStringGen } from "../../../../../../utils";
 import IVotingOngoingProps from "./model";
 import config from "../../../../../../config";
 import algosdk from "algosdk";
-import { IStateModel } from "../../../../../../model/hooks.model";
+import { IActionModel, IStateModel } from "../../../../../../model/hooks.model";
 
-import { StateContext } from "../../../../../../hooks";
+import { ActionContext, StateContext } from "../../../../../../hooks";
 import { sha256 } from "js-sha256";
 import { base64ToHex } from "../../../../../../utils";
 
 const VotingOngoing: FC<IVotingOngoingProps> = ({
   viewPOIConfig,
   poiCreationTime,
+  setShowLeftSideBar,
 }) => {
   const { walletAccount } = useContext<IStateModel>(StateContext);
   const [voteSecretSalt, setVoteSecretSalt] = useState<string>("");
   const [userPOIData, setUserPOIData] = useState<any>();
+  const { toggleModal } = useContext<IActionModel>(ActionContext);
 
   const viewUserPOIData = async (account: string, appID: any, geohash: any) => {
     let unPaddedGeohash = geohash;
@@ -64,7 +66,7 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
     try {
       const response = await viewUserPOIData(
         walletAccount.addr,
-        13164862,
+        13172027,
         viewPOIConfig.gh.replaceAll("o", "")
       );
       setUserPOIData(response);
@@ -99,7 +101,7 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
     );
     let params = await algodclient.getTransactionParams().do();
     let sender = walletAccount.addr;
-    const index = 13164862;
+    const index = 13172027;
 
     const hash = sha256(vote + voteSecretSalt).slice(0, 16);
     console.log("hash");
@@ -122,6 +124,11 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
     console.log("Transaction : " + xtx.txId);
     saveSalt();
     fetchUserPOIDataCallback();
+    setShowLeftSideBar();
+    toggleModal({
+      openModal: true,
+      modalConfig: { type: "transaction-done-vote" },
+    });
   };
 
   const saveSalt = () => {

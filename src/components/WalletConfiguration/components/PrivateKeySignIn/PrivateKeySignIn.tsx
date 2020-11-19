@@ -8,7 +8,7 @@ function PrivateKeySignIn() {
   const { setWalletInfo } = useContext<IActionModel>(ActionContext);
 
   const [walletPrivateKey, setWalletPrivateKey] = useState<string>(
-    "derive scene gorilla attitude nation egg squirrel category crew concert hidden master obey ride lock immune rack vocal mesh member rude blossom dust about sand"
+    "guitar gadget large flush menu shrimp can stuff bid already tunnel drift flush weekend truth void float expire defense swear mail swap rebuild ability powder"
   );
   const [walletLoader, setWalletLoader] = useState<boolean>(false);
 

@@ -3,7 +3,14 @@ import "./Modal.scss";
 import { StateContext, ActionContext } from "../../hooks";
 import { IActionModel, IStateModel } from "../../model/hooks.model";
 import { FiX } from "react-icons/fi";
-import { Login, Signup, UserDetails, WalletConfiguration, WalletDetails } from "..";
+import {
+  Login,
+  Signup,
+  UserDetails,
+  WalletConfiguration,
+  WalletDetails,
+} from "..";
+import TransactionStatus from "../TransactionStatus";
 
 function Modal() {
   const { toggleModal } = useContext<IActionModel>(ActionContext);
@@ -31,6 +38,18 @@ function Modal() {
           {modalConfig.type === "login" && <Login />}
           {modalConfig.type === "signup" && <Signup />}
           {modalConfig.type === "user-details" && <UserDetails />}
+          {modalConfig.type === "transaction-done-vote" && (
+            <TransactionStatus action="Vote" />
+          )}
+          {modalConfig.type === "transaction-done-reveal" && (
+            <TransactionStatus action="Reveal" />
+          )}
+          {modalConfig.type === "transaction-done-withdraw" && (
+            <TransactionStatus action="Claim" />
+          )}
+          {modalConfig.type === "transaction-done-create" && (
+            <TransactionStatus action="Create" />
+          )}
         </div>
       </div>
     </div>

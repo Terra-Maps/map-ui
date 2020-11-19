@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useContext, useEffect, useState } from "react";
 import "./VotingClaim.scss";
 import IVotingClaimProps from "./model";
-import { IStateModel } from "../../../../../../model/hooks.model";
-import { StateContext } from "../../../../../../hooks";
+import { IActionModel, IStateModel } from "../../../../../../model/hooks.model";
+import { ActionContext, StateContext } from "../../../../../../hooks";
 import algosdk from "algosdk";
 import config from "../../../../../../config";
 import {
@@ -14,9 +14,11 @@ import {
 const VotingClaim: FC<IVotingClaimProps> = ({
   viewPOIConfig,
   poiCreationTime,
+  setShowLeftSideBar,
 }) => {
   const { walletAccount } = useContext<IStateModel>(StateContext);
   const [userPOIData, setUserPOIData] = useState<any>();
+  const { toggleModal } = useContext<IActionModel>(ActionContext);
 
   const viewUserPOIData = async (account: string, appID: any, geohash: any) => {
     let newGeohash = viewPOIConfig.gh.replaceAll("o", "");
@@ -62,7 +64,7 @@ const VotingClaim: FC<IVotingClaimProps> = ({
     try {
       const response = await viewUserPOIData(
         walletAccount.addr,
-        13164862,
+        13172027,
         viewPOIConfig.gh.replaceAll("o", "")
       );
       setUserPOIData(response);
@@ -82,7 +84,7 @@ const VotingClaim: FC<IVotingClaimProps> = ({
     );
     let params = await algodclient.getTransactionParams().do();
     let sender = walletAccount.addr;
-    const index = 13164862;
+    const index = 13172027;
 
     console.log("hash");
     let appArgs = [
@@ -103,8 +105,21 @@ const VotingClaim: FC<IVotingClaimProps> = ({
     );
     // Must be signed by the account sending the asset
     const rawSignedTxn = txn1.signTxn(walletAccount.sk);
-    let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
-    console.log("Transaction : " + xtx.txId);
+    try {
+      let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
+      console.log("Transaction : " + xtx.txId);
+      setShowLeftSideBar();
+      toggleModal({
+        openModal: true,
+        modalConfig: { type: "transaction-done-reveal" },
+      });
+    } catch {
+      setShowLeftSideBar();
+      toggleModal({
+        openModal: true,
+        modalConfig: { type: "transaction-done-reveal" },
+      });
+    }
   };
 
   useEffect(() => {

@@ -1,8 +1,8 @@
 import React, { FC, useContext, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
-import { StateContext } from "../../../../hooks";
-import { IStateModel } from "../../../../model/hooks.model";
+import { ActionContext, StateContext } from "../../../../hooks";
+import { IActionModel, IStateModel } from "../../../../model/hooks.model";
 import "./AddPointForm.scss";
 import IAddPointForm from "./model";
 import algosdk from "algosdk";
@@ -29,6 +29,7 @@ const AddPointForm: FC<IAddPointForm> = ({
   const [poiDescription, setPoiDescription] = useState<string>("Jaipur");
   const [poiStakeAmount, setPoiStakeAmount] = useState<string>("233");
   const [addPoiLoader, setAddPoiLoader] = useState<boolean>(false);
+  const { toggleModal } = useContext<IActionModel>(ActionContext);
 
   const addPOI = async () => {
     // const { permissions } = user;
@@ -69,7 +70,7 @@ const AddPointForm: FC<IAddPointForm> = ({
     );
     let params = await algodclient.getTransactionParams().do();
     console.log(walletAccount, "walletAccount");
-    const index = 13164862;
+    const index = 13172027;
     let appArgs = [
       stringToUint("create_poi"),
       stringToUint(addPOIConfig.geohash),
@@ -139,9 +140,16 @@ const AddPointForm: FC<IAddPointForm> = ({
     console.log("Transaction : " + xtx.txId);
     // setAddPoiLoader(false);
     // setShowLeftSideBar(false);
-    refreshMap();
+    // refreshMap();
+
     setAddPoiLoader(false);
     setShowLeftSideBar(false);
+
+    toggleModal({
+      openModal: true,
+      modalConfig: { type: "transaction-done-create" },
+    });
+    refreshMap();
   };
 
   function stringToUint(field: string) {

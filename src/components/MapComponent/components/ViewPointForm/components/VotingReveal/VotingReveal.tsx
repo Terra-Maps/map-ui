@@ -2,8 +2,8 @@ import React, { FC, useCallback, useContext, useEffect, useState } from "react";
 import "./VotingReveal.scss";
 import IVotingRevealProps from "./model";
 import { RadioGroup, Radio } from "react-radio-group";
-import { IStateModel } from "../../../../../../model/hooks.model";
-import { StateContext } from "../../../../../../hooks";
+import { IActionModel, IStateModel } from "../../../../../../model/hooks.model";
+import { ActionContext, StateContext } from "../../../../../../hooks";
 import algosdk from "algosdk";
 import config from "../../../../../../config";
 import {
@@ -15,6 +15,7 @@ import {
 const VotingReveal: FC<IVotingRevealProps> = ({
   viewPOIConfig,
   poiCreationTime,
+  setShowLeftSideBar,
 }) => {
   const { walletAccount } = useContext<IStateModel>(StateContext);
   const [selectedVotingOption, setSelectedVotingOption] = useState<string>(
@@ -23,6 +24,7 @@ const VotingReveal: FC<IVotingRevealProps> = ({
   const [userPOIData, setUserPOIData] = useState<any>();
   const [saltForReveal, setSaltForReveal] = useState<string>("");
   const [alreadyVoted, setAlreadyVoted] = useState<boolean>(false);
+  const { toggleModal } = useContext<IActionModel>(ActionContext);
 
   const viewUserPOIData = async (account: string, appID: any, geohash: any) => {
     let newGeohash = viewPOIConfig.gh.replaceAll("o", "");
@@ -68,7 +70,7 @@ const VotingReveal: FC<IVotingRevealProps> = ({
     try {
       const response = await viewUserPOIData(
         walletAccount.addr,
-        13164862,
+        13172027,
         viewPOIConfig.gh.replaceAll("o", "")
       );
       setUserPOIData(response);
@@ -93,7 +95,7 @@ const VotingReveal: FC<IVotingRevealProps> = ({
     );
     let params = await algodclient.getTransactionParams().do();
     let sender = walletAccount.addr;
-    const index = 13164862;
+    const index = 13172027;
 
     console.log("hash");
     let appArgs = [
@@ -124,6 +126,11 @@ const VotingReveal: FC<IVotingRevealProps> = ({
     const rawSignedTxn = txn1.signTxn(walletAccount.sk);
     let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
     console.log("Transaction : " + xtx.txId);
+    setShowLeftSideBar();
+    toggleModal({
+      openModal: true,
+      modalConfig: { type: "transaction-done-reveal" },
+    });
   };
 
   useEffect(() => {
