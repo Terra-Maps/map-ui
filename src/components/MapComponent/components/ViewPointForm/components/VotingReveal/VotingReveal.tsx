@@ -1,28 +1,49 @@
-import React, { FC, useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import "./VotingReveal.scss";
 import IVotingRevealProps from "./model";
 import { RadioGroup, Radio } from "react-radio-group";
-import { IStateModel } from "../../../../../../model/hooks.model";
-import { StateContext } from "../../../../../../hooks";
+import { IActionModel, IStateModel } from "../../../../../../model/hooks.model";
+import { ActionContext, StateContext } from "../../../../../../hooks";
 import algosdk from "algosdk";
 import config from "../../../../../../config";
 import {
   base64ToHex,
   convertFromHex,
   stringToUint,
+  waitForConfirmation
 } from "../../../../../../utils";
 
 const VotingReveal: FC<IVotingRevealProps> = ({
   viewPOIConfig,
   poiCreationTime,
 }) => {
-  const { walletAccount } = useContext<IStateModel>(StateContext);
+  const {
+    user,
+    decryptedWalletPrivateKey,
+    decryptionDone,
+    decryptionFor,
+  } = useContext<IStateModel>(StateContext);
+  const {
+    toggleModal,
+    setDecryptionFor,
+    setDecryptionDone,
+    setWalletInfo,
+  } = useContext<IActionModel>(ActionContext);
+
   const [selectedVotingOption, setSelectedVotingOption] = useState<string>(
     "yes"
   );
   const [userPOIData, setUserPOIData] = useState<any>();
   const [saltForReveal, setSaltForReveal] = useState<string>("");
   const [alreadyVoted, setAlreadyVoted] = useState<boolean>(false);
+  const componentIsMounted = useRef(true);
 
   const viewUserPOIData = async (account: string, appID: any, geohash: any) => {
     let newGeohash = viewPOIConfig.gh.replaceAll("o", "");
@@ -41,14 +62,14 @@ const VotingReveal: FC<IVotingRevealProps> = ({
     let objects = new Array(...value);
 
     var res = objects.filter(function (v) {
-      return v["id"] == appID;
+      return v["id"] === appID;
     });
     console.log("viewUserPOIData", JSON.stringify(res, undefined, 2));
     var obj = res[0]["key-value"];
     var bs64 = btoa(newGeohash);
     console.log("viewUserPOIData", "base", bs64, "geohash", geohash);
     const newObj = obj.filter(function (v: any) {
-      return v["key"] == bs64;
+      return v["key"] === bs64;
     });
     console.log("viewUserPOIData", "newObj", newObj);
     const str = base64ToHex(newObj[0].value.bytes);
@@ -67,7 +88,7 @@ const VotingReveal: FC<IVotingRevealProps> = ({
   const fetchUserPOIDataCallback = useCallback(async () => {
     try {
       const response = await viewUserPOIData(
-        walletAccount.addr,
+        user.wallet.address,
         13164862,
         viewPOIConfig.gh.replaceAll("o", "")
       );
@@ -81,50 +102,106 @@ const VotingReveal: FC<IVotingRevealProps> = ({
     } catch (error) {
       console.log(error);
     }
-  }, [viewPOIConfig, walletAccount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewPOIConfig, user]);
 
   const revealVote = async () => {
-    //  let newGeohash = addPaddingToGeohash(viewPOIConfig.gh)
-    console.log(viewPOIConfig.gh.length, "viewPOIConfig.gh");
-    const algodclient = new algosdk.Algodv2(
-      config.algorand.TOKEN,
-      config.algorand.BASE_SERVER,
-      config.algorand.PORT
-    );
-    let params = await algodclient.getTransactionParams().do();
-    let sender = walletAccount.addr;
-    const index = 13164862;
-
-    console.log("hash");
-    let appArgs = [
-      stringToUint("reveal_vote"),
-      stringToUint(viewPOIConfig.gh.replaceAll("o", "")),
-      stringToUint(selectedVotingOption),
-      stringToUint(saltForReveal),
-    ];
-    console.log(
-      "appArgs",
-      "reveal_vote",
-      viewPOIConfig.gh,
-      selectedVotingOption,
-      saltForReveal
-    );
-    let appAccounts = [
-      viewPOIConfig.creatorAddress,
-      viewPOIConfig.creatorAddress,
-    ];
-    let txn1 = algosdk.makeApplicationNoOpTxn(
-      sender,
-      params,
-      index,
-      appArgs,
-      appAccounts
-    );
-    // Must be signed by the account sending the asset
-    const rawSignedTxn = txn1.signTxn(walletAccount.sk);
-    let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
-    console.log("Transaction : " + xtx.txId);
+    setDecryptionFor("VOTE_REVEAL");
+    const modal = {
+      openModal: true,
+      modalConfig: { type: "decrypt-wallet" },
+    };
+    toggleModal(modal);
   };
+
+  const startRevealing = async () => {
+    const modal = {
+      openModal: true,
+      modalConfig: { type: "transaction-progress" },
+    };
+    toggleModal(modal);
+    try {
+      //  let newGeohash = addPaddingToGeohash(viewPOIConfig.gh)
+      console.log(viewPOIConfig.gh.length, "viewPOIConfig.gh");
+      const algodclient = new algosdk.Algodv2(
+        config.algorand.TOKEN,
+        config.algorand.BASE_SERVER,
+        config.algorand.PORT
+      );
+      let params = await algodclient.getTransactionParams().do();
+      let sender = user.wallet.address;
+      const index = 13164862;
+
+      console.log("hash");
+      let appArgs = [
+        stringToUint("reveal_vote"),
+        stringToUint(viewPOIConfig.gh.replaceAll("o", "")),
+        stringToUint(selectedVotingOption),
+        stringToUint(saltForReveal),
+      ];
+      console.log(
+        "appArgs",
+        "reveal_vote",
+        viewPOIConfig.gh,
+        selectedVotingOption,
+        saltForReveal
+      );
+      let appAccounts = [
+        viewPOIConfig.creatorAddress,
+        viewPOIConfig.creatorAddress,
+      ];
+      let txn1 = algosdk.makeApplicationNoOpTxn(
+        sender,
+        params,
+        index,
+        appArgs,
+        appAccounts
+      );
+      // Must be signed by the account sending the asset
+      const myAccount = algosdk.mnemonicToSecretKey(decryptedWalletPrivateKey);
+      const rawSignedTxn = txn1.signTxn(myAccount.sk);
+      let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
+      console.log("Transaction : " + xtx.txId);
+      await waitForConfirmation(algodclient, xtx.txId);
+      setDecryptionFor(null);
+      setWalletInfo("");
+      setDecryptionDone(false);
+      const modal = {
+        openModal: true,
+        modalConfig: { type: "transaction-done" },
+      };
+      toggleModal(modal);
+    } catch (err) {
+      console.log(err);
+      setDecryptionFor(null);
+      setWalletInfo("");
+      setDecryptionDone(false);
+      const modal = {
+        openModal: true,
+        modalConfig: { type: "transaction-failed" },
+      };
+      toggleModal(modal);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      decryptionDone &&
+      decryptionFor === "VOTE_REVEAL" &&
+      decryptedWalletPrivateKey &&
+      componentIsMounted.current
+    ) {
+      console.log("startRevealing");
+      startRevealing();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [decryptionDone, decryptedWalletPrivateKey, decryptionFor]);
+
+  useEffect(() => {
+    return () => {
+      componentIsMounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     fetchUserPOIDataCallback();
@@ -143,6 +220,8 @@ const VotingReveal: FC<IVotingRevealProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewPOIConfig.gh]);
+
+  console.log("userPOIData", userPOIData)
 
   return (
     <div className="VotingReveal">

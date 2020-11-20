@@ -14,17 +14,20 @@ export interface IStateModel {
   lng: number;
   zoom: number;
   walletStep: number;
-  walletPrivateKey: string;
-  walletAccount: any;
-  walletInfo: any;
+  encryptedWalletPrivateKey: any;
+  decryptedWalletPrivateKey: any;
   user: any;
+  decryptionDone: boolean;
+  decryptionFor: string | null;
 }
 
 export interface IActionModel {
   toggleModal: (modal: IModalModel) => void;
   setMapLocation: (lat: number, lng: number, zoom: number) => void;
   setWalletStep: (walletStep: number) => void;
-  setWalletInfo: (walletPrivateKey: string) => Promise<void>;
+  setWalletInfo: (walletPrivateKey: string) => void;
   fetchUser: () => void
   resetUser: () => void
+  setDecryptionDone: (done: boolean) => void;
+  setDecryptionFor: (decryptionFor: string | null) => void;
 }

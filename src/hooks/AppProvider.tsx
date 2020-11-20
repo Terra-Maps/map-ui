@@ -27,17 +27,25 @@ export const AppProvider = (props: any) => {
           ...prevState,
           walletStep: action.walletStep,
         };
-      case Actions.SET_WALLET_INFO:
+      case Actions.SET_DECRYPTED_WALLET_INFO:
         return {
           ...prevState,
-          walletInfo: action.walletInfo,
-          walletAccount: action.walletAccount,
-          walletPrivateKey: action.walletPrivateKey,
+          decryptedWalletPrivateKey: action.walletPrivateKey,
         };
       case Actions.SET_USER:
         return {
           ...prevState,
           user: action.user,
+        };
+      case Actions.SET_DECRYPTION_DONE:
+        return {
+          ...prevState,
+          decryptionDone: action.decryptionDone,
+        };
+      case Actions.SET_DECRYPTION_FOR:
+        return {
+          ...prevState,
+          decryptionFor: action.decryptionFor,
         };
 
       default:

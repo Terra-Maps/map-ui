@@ -1,19 +1,15 @@
-import React, { FC, useContext, useState } from "react";
+import React, { FC, useContext, useEffect, useRef, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
-import { StateContext } from "../../../../hooks";
-import { IStateModel } from "../../../../model/hooks.model";
+import { ActionContext, StateContext } from "../../../../hooks";
+import { IActionModel, IStateModel } from "../../../../model/hooks.model";
 import "./AddPointForm.scss";
 import IAddPointForm from "./model";
 import algosdk from "algosdk";
 import config from "../../../../config";
 import { BeatLoader } from "react-spinners";
 import Geohash from "latlon-geohash";
-import {
-  handleSignCallbackService,
-  handleSignTransaction,
-} from "../../../../service/OreService";
-import { convertToHex } from "../../../../utils";
+import { convertToHex, waitForConfirmation } from "../../../../utils";
 
 const AddPointForm: FC<IAddPointForm> = ({
   addPOIConfig,
@@ -21,7 +17,18 @@ const AddPointForm: FC<IAddPointForm> = ({
   setAddPOIConfig,
   refreshMap,
 }) => {
-  const { walletAccount, user } = useContext<IStateModel>(StateContext);
+  const {
+    user,
+    decryptedWalletPrivateKey,
+    decryptionDone,
+    decryptionFor,
+  } = useContext<IStateModel>(StateContext);
+  const {
+    toggleModal,
+    setDecryptionFor,
+    setDecryptionDone,
+    setWalletInfo,
+  } = useContext<IActionModel>(ActionContext);
   console.log("useruser", user);
   const [poiType, setPoiType] = useState<string>("Jaipur");
   const [poiName, setPoiName] = useState<string>("Jaipur");
@@ -30,118 +37,148 @@ const AddPointForm: FC<IAddPointForm> = ({
   const [poiStakeAmount, setPoiStakeAmount] = useState<string>("233");
   const [addPoiLoader, setAddPoiLoader] = useState<boolean>(false);
 
-  const addPOI = async () => {
-    // const { permissions } = user;
-    // const permission = permissions[0];
-    // let provider = permission.externalWalletType;
+  const componentIsMounted = useRef(true);
 
-    // let { accountName } = user;
-    // provider = provider || "oreid"; // default to ore id
+  const addPOI = () => {
+    setDecryptionFor("ADD_POI");
 
-    let newGeohash = addPOIConfig.geohash;
-    setAddPoiLoader(true);
-    console.log(addPOIConfig.geohash.length, "addPOIConfig.geohash");
-    if (addPOIConfig.geohash.length < 12) {
-      let geoLen = addPOIConfig.geohash.length;
-      var paddingLen = 12 - geoLen;
-      newGeohash = addPOIConfig.geohash + "o".repeat(paddingLen);
-      console.log(newGeohash, "newGeohash");
-    }
-    const poi = {
-      nm: poiName,
-      gh: newGeohash,
-      tp: poiType,
-      ad: poiAddress,
-      ds: poiDescription,
-      st: poiStakeAmount,
+    const modal = {
+      openModal: true,
+      modalConfig: { type: "decrypt-wallet" },
     };
-    console.log(poi);
-    let sender = walletAccount.addr;
-    const hexSender = convertToHex(sender);
-    const noteField = `terra-${newGeohash}-${sender}-${JSON.stringify(poi)}`;
-    console.log(noteField, "noteField");
-    var noteFieldUInt = stringToUint(noteField);
-    console.log(walletAccount, noteField);
-    const algodclient = new algosdk.Algodv2(
-      config.algorand.TOKEN,
-      config.algorand.BASE_SERVER,
-      config.algorand.PORT
-    );
-    let params = await algodclient.getTransactionParams().do();
-    console.log(walletAccount, "walletAccount");
-    const index = 13164862;
-    let appArgs = [
-      stringToUint("create_poi"),
-      stringToUint(addPOIConfig.geohash),
-    ];
-    // let appArgsNormal = ["create_poi", addPOIConfig.geohash];
+    toggleModal(modal);
+  };
 
-    let xtxn = algosdk.makeApplicationNoOpTxn(
-      sender,
-      params,
-      index,
-      appArgs,
-      undefined,
-      undefined,
-      undefined,
-      noteFieldUInt,
-      undefined,
-      undefined
-    );
+  const startAddingPoi = async () => {
+    const modal = {
+      openModal: true,
+      modalConfig: { type: "transaction-progress" },
+    };
+    toggleModal(modal);
+    try {
+      let newGeohash = addPOIConfig.geohash;
+      setAddPoiLoader(true);
+      console.log(addPOIConfig.geohash.length, "addPOIConfig.geohash");
+      if (addPOIConfig.geohash.length < 12) {
+        let geoLen = addPOIConfig.geohash.length;
+        var paddingLen = 12 - geoLen;
+        newGeohash = addPOIConfig.geohash + "o".repeat(paddingLen);
+        console.log(newGeohash, "newGeohash");
+      }
+      const poi = {
+        nm: poiName,
+        gh: newGeohash,
+        tp: poiType,
+        ad: poiAddress,
+        ds: poiDescription,
+        st: poiStakeAmount,
+      };
+      console.log(poi);
+      let sender = user.wallet.address;
+      const hexSender = convertToHex(sender);
+      const noteField = `terra-${newGeohash}-${sender}-${JSON.stringify(poi)}`;
+      console.log(noteField, "noteField");
+      var noteFieldUInt = stringToUint(noteField);
+      const algodclient = new algosdk.Algodv2(
+        config.algorand.TOKEN,
+        config.algorand.BASE_SERVER,
+        config.algorand.PORT
+      );
+      let params = await algodclient.getTransactionParams().do();
+      const index = 13164862;
+      let appArgs = [
+        stringToUint("create_poi"),
+        stringToUint(addPOIConfig.geohash),
+      ];
+      // let appArgsNormal = ["create_poi", addPOIConfig.geohash];
 
-    // let appArgsNew: any = [];
-    // appArgs.forEach((arg: any) => {
-    //   appArgsNew.push([...arg]);
-    // });
+      let xtxn = algosdk.makeApplicationNoOpTxn(
+        sender,
+        params,
+        index,
+        appArgs,
+        undefined,
+        undefined,
+        undefined,
+        noteFieldUInt,
+        undefined,
+        undefined
+      );
 
-    // let appArgsNewNormal: any = [];
-    // appArgs.forEach((arg: any) => {
-    //   appArgsNewNormal.push(btoa(arg));
-    // });
+      let appArgsNew: any = [];
+      appArgs.forEach((arg: any) => {
+        appArgsNew.push([...arg]);
+      });
 
-    // let newNote: any = [];
+      let appArgsNewNormal: any = [];
+      appArgs.forEach((arg: any) => {
+        appArgsNewNormal.push(btoa(arg));
+      });
 
-    // console.log("bufferArgs", appArgsNew);
+      let newNote: any = [];
 
-    // let txn = {
-    //   type: "appl",
-    //   from: sender,
-    //   fee: params.minFee,
-    //   firstRound: params.lastRound,
-    //   lastRound: params.lastRound + 1000,
-    //   genesisID: params.genesisId,
-    //   genesisHash: params.genesisHash,
-    //   appIndex: index,
-    //   appOnComplete: 0,
-    //   appArgs: appArgsNewNormal,
-    //   appAccounts: undefined,
-    //   appForeignApps: undefined,
-    //   appForeignAssets: undefined,
-    //   note: btoa(noteField),
-    //   lease: undefined,
-    //   reKeyTo: undefined,
-    // };
+      console.log("bufferArgs", appArgsNew);
 
-    // console.log("JSONApp", JSON.stringify(txn));
+      let txn = {
+        type: "appl",
+        from: sender,
+        fee: params.minFee,
+        firstRound: params.lastRound,
+        lastRound: params.lastRound + 1000,
+        genesisID: params.genesisId,
+        genesisHash: params.genesisHash,
+        appIndex: index,
+        appOnComplete: 0,
+        appArgs: appArgsNewNormal,
+        appAccounts: undefined,
+        appForeignApps: undefined,
+        appForeignAssets: undefined,
+        note: btoa(noteField),
+        lease: undefined,
+        reKeyTo: undefined,
+      };
 
-    // await handleSignTransaction(
-    //   provider,
-    //   accountName,
-    //   permission.chainAccount,
-    //   permission.chainNetwork,
-    //   txn,
-    //   user
-    // );
+      const myAccount = algosdk.mnemonicToSecretKey(decryptedWalletPrivateKey);
 
-    // Must be signed by the account sending the asset
-    const rawSignedTxn = xtxn.signTxn(walletAccount.sk);
-    let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
-    console.log("Transaction : " + xtx.txId);
-    // setAddPoiLoader(false);
-    // setShowLeftSideBar(false);
-    refreshMap();
-    setAddPoiLoader(false);
-    setShowLeftSideBar(false);
+      console.log("JSONApp", JSON.stringify(txn));
+      let txnAppr: any = algosdk.makeApplicationOptInTxn(sender, params, index);
+      let rawSignedApprTxn = txnAppr.signTxn(myAccount.sk);
+      let opttx = await algodclient.sendRawTransaction(rawSignedApprTxn).do();
+      console.log("Transaction : " + opttx.txId);
+
+      params = await algodclient.getTransactionParams().do();
+
+      //Must be signed by the account sending the asset
+      const rawSignedTxn = xtxn.signTxn(myAccount.sk);
+      let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
+      console.log("Transaction : " + xtx.txId);
+      await waitForConfirmation(algodclient, xtx.txId);
+      setAddPoiLoader(false);
+      setShowLeftSideBar(false);
+      refreshMap();
+      setAddPoiLoader(false);
+      setShowLeftSideBar(false);
+      setDecryptionFor(null);
+      setWalletInfo("");
+      setDecryptionDone(false);
+      const modal2 = {
+        openModal: true,
+        modalConfig: { type: "transaction-done" },
+      };
+      toggleModal(modal2);
+    } catch (err) {
+      console.log(err);
+      setAddPoiLoader(false);
+      refreshMap();
+      setDecryptionFor(null);
+      setWalletInfo("");
+      setDecryptionDone(false);
+      const modal2 = {
+        openModal: true,
+        modalConfig: { type: "transaction-failed" },
+      };
+      toggleModal(modal2);
+    }
   };
 
   function stringToUint(field: string) {
@@ -153,16 +190,24 @@ const AddPointForm: FC<IAddPointForm> = ({
     return new Uint8Array(uintArray);
   }
 
-  const handleSignCallback = async () => {
-    const urlPath = `${window.location.origin}${window.location.pathname}`;
-    if (urlPath === `${window.location.origin}/signcallback`) {
-      await handleSignCallbackService();
+  useEffect(() => {
+    if (
+      decryptionDone &&
+      decryptionFor === "ADD_POI" &&
+      decryptedWalletPrivateKey &&
+      componentIsMounted.current
+    ) {
+      console.log("startAddingPoi");
+      startAddingPoi();
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [decryptionDone, decryptedWalletPrivateKey]);
 
-  React.useEffect(() => {
-    handleSignCallback();
-  });
+  useEffect(() => {
+    return () => {
+      componentIsMounted.current = false;
+    };
+  }, []);
 
   return (
     <div className="AddPointForm">
@@ -243,7 +288,7 @@ const AddPointForm: FC<IAddPointForm> = ({
         <div className="add-poi-form-footer">
           <button
             className="add-poi-button"
-            disabled={!walletAccount}
+            // disabled={!walletAccount}
             onClick={addPOI}
           >
             {addPoiLoader ? (

@@ -1,10 +1,10 @@
 import Actions from "./Actions";
-import { IModalModel } from "../model/hooks.model";
+import { IActionModel, IModalModel, IStateModel } from "../model/hooks.model";
 import config from "../config";
 import algosdk from "algosdk";
-import { ApiService, OreService } from "../service";
+import { ApiService } from "../service";
 
-const Reducers = (dispatch: any) => ({
+const Reducers = (dispatch: any): IActionModel => ({
   toggleModal: (modal: IModalModel) => {
     dispatch({ type: Actions.TOGGLE_MODAL, modal });
   },
@@ -15,61 +15,62 @@ const Reducers = (dispatch: any) => ({
     dispatch({ type: Actions.SET_WALLET_STEP, walletStep });
   },
   setWalletInfo: async (walletPrivateKey: string) => {
-    return new Promise<void>(async (resolve, reject) => {
-      const algodclient = new algosdk.Algodv2(
-        config.algorand.TOKEN,
-        config.algorand.BASE_SERVER,
-        config.algorand.PORT
-      );
-      let myAccount = algosdk.mnemonicToSecretKey(walletPrivateKey);
-      let walletInfo = await algodclient
-        .accountInformation(myAccount.addr)
-        .do();
-      console.log(walletInfo);
-      dispatch({
-        type: Actions.SET_WALLET_INFO,
-        walletPrivateKey,
-        walletAccount: myAccount,
-        walletInfo,
-      });
-      const modal = {
-        openModal: false,
-        modalConfig: { type: "" },
-      };
-      dispatch({ type: Actions.TOGGLE_MODAL, modal });
-      resolve();
+    dispatch({
+      type: Actions.SET_DECRYPTED_WALLET_INFO,
+      walletPrivateKey
     });
+    // const modal = {
+    //   openModal: false,
+    //   modalConfig: { type: "" },
+    // };
+    // dispatch({ type: Actions.TOGGLE_MODAL, modal });
   },
   fetchUser: async () => {
     const response = await ApiService.fetchUser("1234");
     console.log(response);
     if (response.user) {
       dispatch({ type: Actions.SET_USER, user: response.user });
-      const modal = {
-        openModal: false,
-        modalConfig: { type: "" },
-      };
-      dispatch({ type: Actions.TOGGLE_MODAL, modal });
+      if (response.user.wallet.address && response.user.wallet.passphrase) {
+        const modal = {
+          openModal: false,
+          modalConfig: { type: "" },
+        };
+        dispatch({ type: Actions.TOGGLE_MODAL, modal });
+      } else {
+        const modal = {
+          openModal: true,
+          modalConfig: { type: "wallet" },
+        };
+        dispatch({ type: Actions.TOGGLE_MODAL, modal });
+      }
     } else {
       localStorage.removeItem("jwt-token");
     }
   },
   resetUser: async () => {
     dispatch({ type: Actions.SET_USER, user: null });
+  },
+  setDecryptionDone: (done: boolean) => {
+    dispatch({ type: Actions.SET_DECRYPTION_DONE, decryptionDone: done });
+  },
+  setDecryptionFor: (decryptionFor: string | null) => {
+    dispatch({ type: Actions.SET_DECRYPTION_FOR, decryptionFor });
+
   }
 });
 
-export const stateInitialValue = {
+export const stateInitialValue: IStateModel = {
   openModal: false,
   modalConfig: { type: "" },
   lat: 26.29,
   lng: 78.12,
   zoom: 4,
   walletStep: 0,
-  walletPrivateKey: "",
-  walletAccount: null,
-  walletInfo: null,
+  encryptedWalletPrivateKey: "",
+  decryptedWalletPrivateKey: "",
   user: null,
+  decryptionDone: false,
+  decryptionFor: null
 };
 
 export default Reducers;

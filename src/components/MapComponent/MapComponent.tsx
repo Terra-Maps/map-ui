@@ -21,7 +21,7 @@ mapboxgl.accessToken = config.maps.MAP_BOX_ACCESS_TOKEN;
 
 function MapComponent() {
   let mapContainer: any = "";
-  const { lat, lng, zoom, walletInfo, user } = useContext<IStateModel>(
+  const { lat, lng, zoom, user } = useContext<IStateModel>(
     StateContext
   );
   const { setMapLocation, toggleModal } = useContext<IActionModel>(
@@ -282,45 +282,20 @@ function MapComponent() {
     <div className="MapComponent">
       <div className="map-side-bar">
         <div
+        >
+          <img src={require('../../assets/png/terralogo.png')} alt="logo" className="logo-image"/>
+        </div>
+        <div
           className="map-side-bar-item"
           onClick={(e) => setShowSearchLocation(true)}
         >
           <FaSearchLocation />
         </div>
         <div className="side-bar-flex-total">
-          <div className="map-side-bar-item">
+          {/* <div className="map-side-bar-item">
             <FaLayerGroup />
-          </div>
+          </div> */}
         </div>
-        {!walletInfo ? (
-          <div
-            className="map-side-bar-item"
-            onClick={() => {
-              toggleModal({
-                openModal: true,
-                modalConfig: { type: "wallet" },
-              });
-            }}
-          >
-            <FaWallet />
-          </div>
-        ) : (
-          <div
-            className="map-side-bar-item"
-            onClick={() => {
-              toggleModal({
-                openModal: true,
-                modalConfig: { type: "wallet-details" },
-              });
-            }}
-          >
-            <img
-              src={makeBlockie(walletInfo.address)}
-              alt="wallet-icon"
-              className="wallet-blockie"
-            />
-          </div>
-        )}
       </div>
       {showSearchLocation && (
         <div className="map-search-container">

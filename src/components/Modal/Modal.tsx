@@ -3,7 +3,17 @@ import "./Modal.scss";
 import { StateContext, ActionContext } from "../../hooks";
 import { IActionModel, IStateModel } from "../../model/hooks.model";
 import { FiX } from "react-icons/fi";
-import { Login, Signup, UserDetails, WalletConfiguration, WalletDetails } from "..";
+import {
+  DecryptPassword,
+  TransactionDone,
+  TransactionProgress,
+  Login,
+  Signup,
+  UserDetails,
+  WalletConfiguration,
+  WalletDetails,
+  TransactionFailed
+} from "..";
 
 function Modal() {
   const { toggleModal } = useContext<IActionModel>(ActionContext);
@@ -31,6 +41,12 @@ function Modal() {
           {modalConfig.type === "login" && <Login />}
           {modalConfig.type === "signup" && <Signup />}
           {modalConfig.type === "user-details" && <UserDetails />}
+          {modalConfig.type === "decrypt-wallet" && <DecryptPassword />}
+          {modalConfig.type === "transaction-progress" && (
+            <TransactionProgress />
+          )}
+          {modalConfig.type === "transaction-done" && <TransactionDone />}
+          {modalConfig.type === "transaction-failed" && <TransactionFailed />}
         </div>
       </div>
     </div>

@@ -29,3 +29,15 @@ export const logout = async () => {
   });
   return await res.json();
 };
+
+export const walletUpdate = async (walletDetails: any) => {
+  const res = await fetch(`${config.urls.API_URL}/profile/wallet/update`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      Authorization: `Bearer ${localStorage.getItem("jwt-token")}`,
+    },
+    body: JSON.stringify(walletDetails)
+  });
+  return await res.json();
+};

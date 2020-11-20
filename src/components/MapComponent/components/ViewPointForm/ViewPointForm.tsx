@@ -16,7 +16,7 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
   setViewPOIConfig,
 }) => {
   viewPOIConfig.vf = false;
-  const { walletAccount } = useContext<IStateModel>(StateContext);
+  const {  } = useContext<IStateModel>(StateContext);
   const [POICreationTime, setPOICreationTime] = useState<any>();
 
   const fetchPOIDataCallback = useCallback(async () => {
@@ -29,9 +29,9 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
     console.log("res", response);
   }, [viewPOIConfig]);
 
-  useEffect(() => {
-    fetchPOIDataCallback();
-  }, [walletAccount]);
+  // useEffect(() => {
+  //   fetchPOIDataCallback();
+  // }, [walletAccount]);
 
   const fetchPOIData = async (account: string, appID: any, geohash: any) => {
     let unPaddedGeohash = geohash.replaceAll("o", "");
@@ -148,18 +148,18 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
             poiCreationTime={POICreationTime}
           />
         ) : null} */}
-        <VotingOngoing
+        {/* <VotingOngoing
           viewPOIConfig={viewPOIConfig}
           poiCreationTime={POICreationTime}
-        />
+        /> */}
         <VotingReveal
           viewPOIConfig={viewPOIConfig}
           poiCreationTime={POICreationTime}
         />
-        <VotingClaim
+        {/* <VotingClaim
           viewPOIConfig={viewPOIConfig}
           poiCreationTime={POICreationTime}
-        />
+        /> */}
       </div>
     </div>
   );

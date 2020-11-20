@@ -42,7 +42,7 @@ const development: IConfig = {
   },
   urls: {
     BASE_URL: process.env.BASE_URL || "http://localhost:3000",
-    API_URL: process.env.API_URL || "http://localhost:8080",
+    API_URL: process.env.API_URL || "http://localhost:5000",
   },
 };
 
@@ -65,7 +65,7 @@ const production: IConfig = {
   },
   urls: {
     BASE_URL: process.env.BASE_URL || "http://localhost:3000",
-    API_URL: process.env.API_URL || "http://localhost:8080",
+    API_URL: process.env.API_URL || "http://localhost:5000",
   },
 };
 
@@ -88,7 +88,7 @@ const test: IConfig = {
   },
   urls: {
     BASE_URL: process.env.BASE_URL || "http://localhost:3000",
-    API_URL: process.env.API_URL || "http://localhost:8080",
+    API_URL: process.env.API_URL || "http://localhost:5000",
   },
 };
 

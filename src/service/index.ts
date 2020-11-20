@@ -1,3 +1,4 @@
 import * as ApiService from "./ApiService";
 import * as OreService from "./OreService";
-export { ApiService, OreService };
+import * as CryptoService from "./CryptoService";
+export { ApiService, OreService, CryptoService };

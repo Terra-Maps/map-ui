@@ -1,4 +1,5 @@
-import ManageWallets from './ManageWallets';
+import ManageWallets from "./ManageWallets";
 import PrivateKeySignIn from "./PrivateKeySignIn";
+import SignPassword from "./SignPassword";
 
-export {ManageWallets, PrivateKeySignIn}
+export { ManageWallets, PrivateKeySignIn, SignPassword };

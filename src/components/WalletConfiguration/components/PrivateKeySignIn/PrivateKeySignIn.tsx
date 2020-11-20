@@ -1,31 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 import { ActionContext } from "../../../../hooks";
 import { IActionModel } from "../../../../model/hooks.model";
 import "./PrivateKeySignIn.scss";
-import { BeatLoader } from "react-spinners";
 
 function PrivateKeySignIn() {
-  const { setWalletInfo } = useContext<IActionModel>(ActionContext);
-
-  const [walletPrivateKey, setWalletPrivateKey] = useState<string>(
-    "derive scene gorilla attitude nation egg squirrel category crew concert hidden master obey ride lock immune rack vocal mesh member rude blossom dust about sand"
+  const { setWalletInfo, setWalletStep } = useContext<IActionModel>(
+    ActionContext
   );
-  const [walletLoader, setWalletLoader] = useState<boolean>(false);
-
-  const componentIsMounted = useRef(true);
-
-  useEffect(() => {
-    return () => {
-      componentIsMounted.current = false;
-    };
-  }, []);
+  const [walletPrivateKey, setWalletPrivateKey] = useState<string>("");
 
   const loadWallet = async () => {
-    setWalletLoader(true);
-    await setWalletInfo(walletPrivateKey);
-    if (componentIsMounted.current) {
-      setWalletLoader(false);
-    }
+    setWalletInfo(walletPrivateKey);
+    setWalletStep(2);
   };
 
   return (
@@ -42,11 +28,7 @@ function PrivateKeySignIn() {
         placeholder="Algorand Private Key here"
       ></textarea>
       <button className="private-key-button" type="button" onClick={loadWallet}>
-        {walletLoader ? (
-          <BeatLoader size={10} color={"#fff"} loading={true} />
-        ) : (
-          "Use this wallet"
-        )}
+        Use this wallet
       </button>
     </div>
   );

@@ -9,6 +9,10 @@ import SignupWorkflows from "./SignupWorkflows";
 import AuthCallback from "./AuthCallback";
 import SignCallback from "./SignCallback";
 import UserDetails from "./UserDetails";
+import DecryptPassword from "./DecryptPassword";
+import TransactionProgress from "./TransactionProgress";
+import TransactionDone from "./TransactionDone";
+import TransactionFailed from "./TransactionFailed";
 
 export {
   MapComponent,
@@ -22,4 +26,8 @@ export {
   AuthCallback,
   SignCallback,
   UserDetails,
+  DecryptPassword,
+  TransactionProgress,
+  TransactionDone,
+  TransactionFailed
 };

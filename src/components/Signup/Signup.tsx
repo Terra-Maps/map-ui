@@ -13,11 +13,22 @@ function Signup() {
       window.open(githubSignInUrl, "_blank");
     });
   };
+
+  const signInWithGoogle = async () => {
+    import("../../config").then((config: any) => {
+      const githubSignInUrl = `${config.default.urls.BASE_URL}/signup/google`;
+      window.open(githubSignInUrl, "_blank");
+    });
+  };
+  
   return (
     <div className="Signup">
       <h2>Signup with</h2>
       <button className="wallet-button" onClick={signInWithGithub}>
         Github
+      </button>
+      <button className="wallet-button" onClick={signInWithGoogle}>
+        Google
       </button>
       <p className="misc-text">
         By clicking continue, you agree to our{" "}

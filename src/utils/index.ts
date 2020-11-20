@@ -58,3 +58,18 @@ export const stringToUint = (field: string) => {
   }
   return new Uint8Array(uintArray);
 };
+
+export const waitForConfirmation = async (algodclient: any, txId: any) => {
+  let status = (await algodclient.status().do());
+  let lastRound = status["last-round"];
+  while (true) {
+      const pendingInfo = await algodclient.pendingTransactionInformation(txId).do();
+      if (pendingInfo["confirmed-round"] !== null && pendingInfo["confirmed-round"] > 0) {
+          //Got the completed Transaction
+          console.log("Transaction " + txId + " confirmed in round " + pendingInfo["confirmed-round"]);
+          break;
+      }
+      lastRound++;
+      await algodclient.statusAfterBlock(lastRound).do();
+  }
+};
