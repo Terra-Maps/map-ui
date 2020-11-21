@@ -1,7 +1,5 @@
 import Actions from "./Actions";
 import { IActionModel, IModalModel, IStateModel } from "../model/hooks.model";
-import config from "../config";
-import algosdk from "algosdk";
 import { ApiService } from "../service";
 
 const Reducers = (dispatch: any): IActionModel => ({
@@ -19,18 +17,15 @@ const Reducers = (dispatch: any): IActionModel => ({
       type: Actions.SET_DECRYPTED_WALLET_INFO,
       walletPrivateKey
     });
-    // const modal = {
-    //   openModal: false,
-    //   modalConfig: { type: "" },
-    // };
-    // dispatch({ type: Actions.TOGGLE_MODAL, modal });
   },
   fetchUser: async () => {
+    dispatch({ type: Actions.SET_USER_LOADING, userLoading: true });
     const response = await ApiService.fetchUser("1234");
     console.log(response);
     if (response.user) {
       dispatch({ type: Actions.SET_USER, user: response.user });
-      if (response.user.wallet.address && response.user.wallet.passphrase) {
+      dispatch({ type: Actions.SET_USER_LOADING, userLoading: false });
+      if (response.user?.wallet?.address && response.user?.wallet?.passphrase) {
         const modal = {
           openModal: false,
           modalConfig: { type: "" },
@@ -45,6 +40,8 @@ const Reducers = (dispatch: any): IActionModel => ({
       }
     } else {
       localStorage.removeItem("jwt-token");
+      dispatch({ type: Actions.SET_USER, user: null });
+      dispatch({ type: Actions.SET_USER_LOADING, userLoading: false });
     }
   },
   resetUser: async () => {
@@ -69,6 +66,7 @@ export const stateInitialValue: IStateModel = {
   encryptedWalletPrivateKey: "",
   decryptedWalletPrivateKey: "",
   user: null,
+  userLoading: true,
   decryptionDone: false,
   decryptionFor: null
 };

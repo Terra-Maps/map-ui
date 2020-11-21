@@ -13,6 +13,7 @@ import DecryptPassword from "./DecryptPassword";
 import TransactionProgress from "./TransactionProgress";
 import TransactionDone from "./TransactionDone";
 import TransactionFailed from "./TransactionFailed";
+import Landing from "./Landing";
 
 export {
   MapComponent,
@@ -29,5 +30,6 @@ export {
   DecryptPassword,
   TransactionProgress,
   TransactionDone,
-  TransactionFailed
+  TransactionFailed,
+  Landing
 };

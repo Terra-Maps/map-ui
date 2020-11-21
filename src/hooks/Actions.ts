@@ -6,6 +6,7 @@ export default class Actions {
   static SET_WALLET_STEP = "[Actions] SET_WALLET_STEP";
   static SET_DECRYPTED_WALLET_INFO = "[Actions] SET_DECRYPTED_WALLET_INFO";
   static SET_USER = "[Actions] SET_USER";
+  static SET_USER_LOADING = "[Actions] SET_USER_LOADING";
   static SET_DECRYPTION_DONE = "[Actions] SET_DECRYPTION_DONE";
   static SET_DECRYPTION_FOR = "[Actions] SET_DECRYPTION_FOR";
 }

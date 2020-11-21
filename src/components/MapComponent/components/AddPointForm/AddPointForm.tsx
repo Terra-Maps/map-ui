@@ -8,8 +8,8 @@ import IAddPointForm from "./model";
 import algosdk from "algosdk";
 import config from "../../../../config";
 import { BeatLoader } from "react-spinners";
-import Geohash from "latlon-geohash";
-import { convertToHex, waitForConfirmation } from "../../../../utils";
+// import Geohash from "latlon-geohash";
+import { waitForConfirmation } from "../../../../utils";
 
 const AddPointForm: FC<IAddPointForm> = ({
   addPOIConfig,
@@ -75,7 +75,7 @@ const AddPointForm: FC<IAddPointForm> = ({
       };
       console.log(poi);
       let sender = user.wallet.address;
-      const hexSender = convertToHex(sender);
+      // const hexSender = convertToHex(sender);s
       const noteField = `terra-${newGeohash}-${sender}-${JSON.stringify(poi)}`;
       console.log(noteField, "noteField");
       var noteFieldUInt = stringToUint(noteField);
@@ -115,7 +115,7 @@ const AddPointForm: FC<IAddPointForm> = ({
         appArgsNewNormal.push(btoa(arg));
       });
 
-      let newNote: any = [];
+      // let newNote: any = [];
 
       console.log("bufferArgs", appArgsNew);
 

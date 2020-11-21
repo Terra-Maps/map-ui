@@ -5,7 +5,6 @@
   background-color: var(--white);
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 
-
   .view-poi-container {
     display: flex;
     flex-direction: column;
@@ -78,7 +77,6 @@
         .poi-verified-icon {
           background-color: var(--green);
         }
-
       }
 
       .view-poi-content-type {
@@ -92,6 +90,12 @@
       .view-poi-content-description {
         border-bottom: 1px solid var(--grey1Color);
       }
+    }
+
+    .loading-container {
+      height: 100%;
+      display: flex;
+      align-items: center;
     }
 
     .view-poi-voting-details {
@@ -163,8 +167,6 @@
           padding: 0px 20px;
           margin: 0px;
           border-radius: 5px;
-  
-          
         }
 
         .correct-button {
@@ -175,7 +177,7 @@
             background: lighten($color: #34a652, $amount: 15);
             border: 1px solid var(--green);
           }
-  
+
           &:disabled {
             background: lighten($color: #34a652, $amount: 15);
             border: 1px solid var(--green);
@@ -191,7 +193,7 @@
             background: lighten($color: #ee0902, $amount: 15);
             border: 1px solid var(--red);
           }
-  
+
           &:disabled {
             background: lighten($color: #ee0902, $amount: 15);
             border: 1px solid var(--red);
@@ -233,7 +235,6 @@
           opacity: 0.6;
           margin-top: 6px;
         }
-
       }
 
       .view-poi-voting-salt {
@@ -243,7 +244,6 @@
         padding-top: 1rem;
         position: relative;
         border-top: 1px solid var(--grey1Color);
-
 
         label {
           font-size: 16px;
@@ -269,11 +269,9 @@
             font-size: 18px;
             display: flex;
             cursor: pointer;
-
           }
         }
       }
     }
-    
   }
 }

@@ -4,7 +4,7 @@ import mapboxgl from "mapbox-gl";
 import { ActionContext, StateContext } from "../../hooks";
 import { IActionModel, IStateModel } from "../../model/hooks.model";
 import { MdGpsFixed } from "react-icons/md";
-import { FaLayerGroup, FaSearchLocation, FaWallet } from "react-icons/fa";
+import { FaSearchLocation } from "react-icons/fa";
 import { FiPlus, FiMinus } from "react-icons/fi";
 import { BsSearch } from "react-icons/bs";
 import { GrClose } from "react-icons/gr";
@@ -13,17 +13,15 @@ import Switch from "react-switch";
 import "./index.d";
 import algosdk from "algosdk";
 import Geohash from "latlon-geohash";
-import makeBlockie from "ethereum-blockies-base64";
 import { ApiService } from "../../service";
 import { AddPointForm, ProfileDropdown, ViewPointForm } from "./components";
+import { Link } from "react-router-dom";
 
 mapboxgl.accessToken = config.maps.MAP_BOX_ACCESS_TOKEN;
 
 function MapComponent() {
   let mapContainer: any = "";
-  const { lat, lng, zoom, user } = useContext<IStateModel>(
-    StateContext
-  );
+  const { lat, lng, zoom, user, userLoading } = useContext<IStateModel>(StateContext);
   const { setMapLocation, toggleModal } = useContext<IActionModel>(
     ActionContext
   );
@@ -281,10 +279,13 @@ function MapComponent() {
   return (
     <div className="MapComponent">
       <div className="map-side-bar">
-        <div
-        >
-          <img src={require('../../assets/png/terralogo.png')} alt="logo" className="logo-image"/>
-        </div>
+        <Link to="/">
+          <img
+            src={require("../../assets/png/terralogo.png")}
+            alt="logo"
+            className="logo-image"
+          />
+        </Link>
         <div
           className="map-side-bar-item"
           onClick={(e) => setShowSearchLocation(true)}
@@ -335,7 +336,7 @@ function MapComponent() {
 
       <div className="map-left-side-bar">
         <div className="map-auth-container">
-          {!user ? (
+          {userLoading ? null : !user ? (
             <>
               <button
                 className="login-button"

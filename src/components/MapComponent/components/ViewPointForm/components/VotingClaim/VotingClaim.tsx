@@ -14,7 +14,6 @@ import algosdk from "algosdk";
 import config from "../../../../../../config";
 import {
   base64ToHex,
-  convertFromHex,
   stringToUint,
   waitForConfirmation
 } from "../../../../../../utils";

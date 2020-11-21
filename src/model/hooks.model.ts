@@ -17,6 +17,7 @@ export interface IStateModel {
   encryptedWalletPrivateKey: any;
   decryptedWalletPrivateKey: any;
   user: any;
+  userLoading: boolean;
   decryptionDone: boolean;
   decryptionFor: string | null;
 }

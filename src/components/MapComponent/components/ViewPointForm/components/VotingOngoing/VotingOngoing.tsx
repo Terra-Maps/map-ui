@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import "./VotingOngoing.scss";
 import { FaSyncAlt } from "react-icons/fa";
-import { addPaddingToGeohash, randomStringGen } from "../../../../../../utils";
+import { randomStringGen } from "../../../../../../utils";
 import IVotingOngoingProps from "./model";
 import config from "../../../../../../config";
 import algosdk from "algosdk";
@@ -157,6 +157,12 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
       // Must be signed by the account sending the asset
       console.log(decryptedWalletPrivateKey);
       const myAccount = algosdk.mnemonicToSecretKey(decryptedWalletPrivateKey);
+      let txnAppr: any = algosdk.makeApplicationOptInTxn(sender, params, index);
+      let rawSignedApprTxn = txnAppr.signTxn(myAccount.sk);
+      let opttx = await algodclient.sendRawTransaction(rawSignedApprTxn).do();
+      console.log("Transaction : " + opttx.txId);
+
+      params = await algodclient.getTransactionParams().do();
       
       console.log(myAccount);
       const rawSignedTxn = txn1.signTxn(myAccount.sk);

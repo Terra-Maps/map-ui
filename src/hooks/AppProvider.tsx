@@ -37,6 +37,11 @@ export const AppProvider = (props: any) => {
           ...prevState,
           user: action.user,
         };
+      case Actions.SET_USER_LOADING:
+        return {
+          ...prevState,
+          userLoading: action.userLoading,
+        };
       case Actions.SET_DECRYPTION_DONE:
         return {
           ...prevState,

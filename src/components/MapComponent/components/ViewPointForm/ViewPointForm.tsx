@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useContext, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 import "./ViewPointForm.scss";
 import IViewPointFormProps from "./model";
@@ -7,62 +7,82 @@ import { VotingClaim, VotingOngoing, VotingReveal } from "./components";
 import { base64ToHex } from "../../../../utils";
 import config from "../../../../config";
 import algosdk from "algosdk";
-import { IStateModel } from "../../../../model/hooks.model";
-import { StateContext } from "../../../../hooks";
+import Lottie from "react-lottie";
+import animationData from "../../../../assets/lottie/loading-hourglass-lottie.json";
 
 const ViewPointForm: FC<IViewPointFormProps> = ({
   viewPOIConfig,
   setShowLeftSideBar,
   setViewPOIConfig,
 }) => {
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
   viewPOIConfig.vf = false;
-  const {  } = useContext<IStateModel>(StateContext);
   const [POICreationTime, setPOICreationTime] = useState<any>();
+  const [viewPoiStatusLoading, setViewPoiStatusLoading] = useState<boolean>(
+    true
+  );
 
   const fetchPOIDataCallback = useCallback(async () => {
+    setViewPoiStatusLoading(true);
     console.log("viewpOI ", viewPOIConfig.creatorAddress);
     const response = await fetchPOIData(
       viewPOIConfig.creatorAddress,
       13164862,
       viewPOIConfig.gh
     );
+    setViewPoiStatusLoading(false);
     console.log("res", response);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewPOIConfig]);
 
-  // useEffect(() => {
-  //   fetchPOIDataCallback();
-  // }, [walletAccount]);
+  useEffect(() => {
+    fetchPOIDataCallback();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchPOIDataCallback]);
 
   const fetchPOIData = async (account: string, appID: any, geohash: any) => {
-    let unPaddedGeohash = geohash.replaceAll("o", "");
-    let indexerClient = new algosdk.Indexer(
-      config.algorand.TOKEN,
-      config.algorand.INDEXER_SERVER,
-      ""
-    );
-    let accountInfo;
     try {
-      accountInfo = await indexerClient.lookupAccountByID(account).do();
-    } catch (error) {
-      console.log("eer", error);
-    }
-    let value = accountInfo["account"]["apps-local-state"];
-    let objects = new Array(...value);
+      let unPaddedGeohash = geohash.replaceAll("o", "");
+      let indexerClient = new algosdk.Indexer(
+        config.algorand.TOKEN,
+        config.algorand.INDEXER_SERVER,
+        ""
+      );
+      let accountInfo;
+      try {
+        accountInfo = await indexerClient.lookupAccountByID(account).do();
+      } catch (error) {
+        console.log("eer", error);
+      }
+      let value = accountInfo["account"]["apps-local-state"];
+      let objects = new Array(...value);
 
-    var res = objects.filter(function (v) {
-      return v["id"] == appID;
-    });
-    console.log(JSON.stringify(res, undefined, 2));
-    var obj = res[0]["key-value"];
-    var bs64 = btoa(unPaddedGeohash);
-    console.log("base", bs64, "geohash", geohash);
-    const newObj = obj.filter(function (v: any) {
-      return v["key"] == bs64;
-    });
-    console.log("newObj", newObj);
-    const creationTime = getepoch(newObj[0].value.bytes);
-    setPOICreationTime(creationTime);
-    return res;
+      var res = objects.filter(function (v) {
+        return v["id"] === appID;
+      });
+      console.log(JSON.stringify(res, undefined, 2));
+      var obj = res[0]["key-value"];
+      var bs64 = btoa(unPaddedGeohash);
+      console.log("base", bs64, "geohash", geohash);
+      const newObj = obj.filter(function (v: any) {
+        return v["key"] === bs64;
+      });
+      console.log("newObj", newObj);
+      const creationTime = getepoch(newObj[0].value.bytes);
+      setPOICreationTime(creationTime);
+      return res;
+    } catch (error) {
+      console.log("Error in fetchPOIData", error);
+      // setPOICreationTime(null)
+      return;
+    }
   };
 
   const getepoch = (str: string) => {
@@ -126,36 +146,44 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
             </div>
           </div>
         </div>
-        {/* {!viewPOIConfig.vf && POICreationTime < POICreationTime + 259200 ? (
-          <VotingOngoing
-            viewPOIConfig={viewPOIConfig}
-            poiCreationTime={POICreationTime}
-          />
-        ) : null}
-        {!viewPOIConfig.vf &&
-        POICreationTime > POICreationTime + 259200 &&
-        POICreationTime < POICreationTime + 518400 ? (
-          <VotingReveal
-            viewPOIConfig={viewPOIConfig}
-            poiCreationTime={POICreationTime}
-          />
-        ) : null}
-        {!viewPOIConfig.vf &&
-        POICreationTime > POICreationTime + 518400 &&
-        POICreationTime < POICreationTime + 777600 ? (
-          <VotingClaim
-            viewPOIConfig={viewPOIConfig}
-            poiCreationTime={POICreationTime}
-          />
-        ) : null} */}
+        {!viewPoiStatusLoading ? (
+          <>
+            {!viewPOIConfig.vf && POICreationTime < POICreationTime + 259200 ? (
+              <VotingOngoing
+                viewPOIConfig={viewPOIConfig}
+                poiCreationTime={POICreationTime}
+              />
+            ) : null}
+            {!viewPOIConfig.vf &&
+            POICreationTime > POICreationTime + 259200 &&
+            POICreationTime < POICreationTime + 518400 ? (
+              <VotingReveal
+                viewPOIConfig={viewPOIConfig}
+                poiCreationTime={POICreationTime}
+              />
+            ) : null}
+            {!viewPOIConfig.vf &&
+            POICreationTime > POICreationTime + 518400 &&
+            POICreationTime < POICreationTime + 777600 ? (
+              <VotingClaim
+                viewPOIConfig={viewPOIConfig}
+                poiCreationTime={POICreationTime}
+              />
+            ) : null}
+          </>
+        ) : (
+          <div className="loading-container">
+            <Lottie options={defaultOptions} height={200} width={200} />
+          </div>
+        )}
         {/* <VotingOngoing
           viewPOIConfig={viewPOIConfig}
           poiCreationTime={POICreationTime}
         /> */}
-        <VotingReveal
+        {/* <VotingReveal
           viewPOIConfig={viewPOIConfig}
           poiCreationTime={POICreationTime}
-        />
+        /> */}
         {/* <VotingClaim
           viewPOIConfig={viewPOIConfig}
           poiCreationTime={POICreationTime}

@@ -41,6 +41,18 @@ const ProfileDropdown: React.FC<IProfileDropdownProps> = ({
         >
           User Details
         </div>
+        <div
+          className="dropdown-item"
+          onClick={(e) => {
+            toggleModal({
+              openModal: true,
+              modalConfig: { type: "wallet-details" },
+            });
+            setShowDropdown(false);
+          }}
+        >
+          Wallet Details
+        </div>
         <div className="dropdown-item" onClick={logout}>
           {logoutText}
         </div>

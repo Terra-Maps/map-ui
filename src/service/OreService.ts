@@ -72,10 +72,10 @@ export const handleSignTransaction = async (
       };
     }
 
-    const multiSigChainAccounts = getMultisigChainAccountsForTransaction(
-      user,
-      chainAccount
-    );
+    // const multiSigChainAccounts = getMultisigChainAccountsForTransaction(
+    //   user,
+    //   chainAccount
+    // );
 
     let signOptions = {
       provider: provider || "", // wallet type (e.g. 'algosigner' or 'oreid')
@@ -95,7 +95,7 @@ export const handleSignTransaction = async (
     let signResponse: any = await oreId.sign(signOptions);
     console.log(signResponse, "signResponse");
     // if the sign responds with a signUrl, then redirect the browser to it to call the signing flow
-    let { signUrl } = signResponse;
+    // let { signUrl } = signResponse;
     // if (signUrl) {
     //   // redirect browser to signUrl
     //   window.location = signUrl;
