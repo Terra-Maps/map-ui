@@ -250,7 +250,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-top: 3rem;
+        margin: 3rem 0px;
 
         .landing-solution-item {
           width: 30%;
@@ -292,7 +292,7 @@
   }
 
   .landing-usecase {
-    min-height: 600px;
+    min-height: 700px;
     background: var(--logoColor);
     display: flex;
     flex-direction: column;
@@ -329,7 +329,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-top: 3rem;
+        margin: 3rem 0px;
 
         .landing-usecase-item {
           width: 30%;
