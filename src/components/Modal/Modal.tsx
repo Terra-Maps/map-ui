@@ -12,7 +12,8 @@ import {
   UserDetails,
   WalletConfiguration,
   WalletDetails,
-  TransactionFailed
+  TransactionFailed,
+  NotSignedUp
 } from "..";
 
 function Modal() {
@@ -47,6 +48,7 @@ function Modal() {
           )}
           {modalConfig.type === "transaction-done" && <TransactionDone />}
           {modalConfig.type === "transaction-failed" && <TransactionFailed />}
+          {modalConfig.type === "not-signed" && <NotSignedUp />}
         </div>
       </div>
     </div>

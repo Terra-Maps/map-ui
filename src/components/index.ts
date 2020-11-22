@@ -13,6 +13,7 @@ import DecryptPassword from "./DecryptPassword";
 import TransactionProgress from "./TransactionProgress";
 import TransactionDone from "./TransactionDone";
 import TransactionFailed from "./TransactionFailed";
+import NotSignedUp from "./NotSignedUp";
 import Landing from "./Landing";
 
 export {
@@ -31,5 +32,6 @@ export {
   TransactionProgress,
   TransactionDone,
   TransactionFailed,
-  Landing
+  Landing,
+  NotSignedUp
 };

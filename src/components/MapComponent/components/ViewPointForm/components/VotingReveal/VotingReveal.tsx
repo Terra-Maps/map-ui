@@ -17,7 +17,7 @@ import {
   base64ToHex,
   convertFromHex,
   stringToUint,
-  waitForConfirmation
+  waitForConfirmation,
 } from "../../../../../../utils";
 
 const VotingReveal: FC<IVotingRevealProps> = ({
@@ -106,12 +106,20 @@ const VotingReveal: FC<IVotingRevealProps> = ({
   }, [viewPOIConfig, user]);
 
   const revealVote = async () => {
-    setDecryptionFor("VOTE_REVEAL");
-    const modal = {
-      openModal: true,
-      modalConfig: { type: "decrypt-wallet" },
-    };
-    toggleModal(modal);
+    if (!user) {
+      const modal = {
+        openModal: true,
+        modalConfig: { type: "not-signed" },
+      };
+      toggleModal(modal);
+    } else {
+      setDecryptionFor("VOTE_REVEAL");
+      const modal = {
+        openModal: true,
+        modalConfig: { type: "decrypt-wallet" },
+      };
+      toggleModal(modal);
+    }
   };
 
   const startRevealing = async () => {
@@ -221,7 +229,7 @@ const VotingReveal: FC<IVotingRevealProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewPOIConfig.gh]);
 
-  console.log("userPOIData", userPOIData)
+  console.log("userPOIData", userPOIData);
 
   return (
     <div className="VotingReveal">

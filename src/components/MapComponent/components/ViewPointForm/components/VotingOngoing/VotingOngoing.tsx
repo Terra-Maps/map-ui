@@ -112,13 +112,21 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
   }, [fetchUserPOIDataCallback]);
 
   const votePOI = async (vote: string) => {
-    setUserVote(vote);
-    setDecryptionFor("VOTE_ONGOING");
-    const modal = {
-      openModal: true,
-      modalConfig: { type: "decrypt-wallet" },
-    };
-    toggleModal(modal);
+    if (!user) {
+      const modal = {
+        openModal: true,
+        modalConfig: { type: "not-signed" },
+      };
+      toggleModal(modal);
+    } else {
+      setUserVote(vote);
+      setDecryptionFor("VOTE_ONGOING");
+      const modal = {
+        openModal: true,
+        modalConfig: { type: "decrypt-wallet" },
+      };
+      toggleModal(modal);
+    }
   };
 
   const startVoting = async () => {
@@ -289,47 +297,51 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
         {userPOIData ? (
           <div>You Have Already Voted</div>
         ) : (
-          <div>
-            <div className="view-poi-voting-stake">
-              <label>Stake Amount</label>
-              <input
-                type="number"
-                className="view-poi-voting-stake-input"
-                placeholder="Enter a stake amount"
-                min={1}
-                value={poiStakeAmount}
-                onChange={(e) => setPoiStakeAmount(e.target.value)}
-              />
+          <>
+            <div>
+              <div className="view-poi-voting-stake">
+                <label>Stake Amount</label>
+                <input
+                  type="number"
+                  className="view-poi-voting-stake-input"
+                  placeholder="Enter a stake amount"
+                  min={1}
+                  value={poiStakeAmount}
+                  onChange={(e) => setPoiStakeAmount(e.target.value)}
+                />
+              </div>
+              <div className="view-poi-voting-button-options">
+                <button
+                  className="voting-button correct-button"
+                  onClick={(e) => votePOI("yes")}
+                >
+                  Correct
+                </button>
+                <button
+                  className="voting-button incorrect-button"
+                  onClick={(e) => votePOI("noo")}
+                >
+                  Incorrect
+                </button>
+              </div>
             </div>
-            <div className="view-poi-voting-button-options">
-              <button
-                className="voting-button correct-button"
-                onClick={(e) => votePOI("yes")}
-              >
-                Correct
-              </button>
-              <button
-                className="voting-button incorrect-button"
-                onClick={(e) => votePOI("noo")}
-              >
-                Incorrect
-              </button>
-            </div>
-          </div>
-        )}
 
-        <div className="view-poi-voting-salt">
-          <label>Your Voting Secret Salt</label>
-          <div className="view-poi-voting-salt-data">
-            <div className="view-poi-voting-salt-value">{voteSecretSalt}</div>
-            <div
-              className="view-poi-voting-salt-reload"
-              onClick={generateNewSalt}
-            >
-              <FaSyncAlt />
+            <div className="view-poi-voting-salt">
+              <label>Your Voting Secret Salt</label>
+              <div className="view-poi-voting-salt-data">
+                <div className="view-poi-voting-salt-value">
+                  {voteSecretSalt}
+                </div>
+                <div
+                  className="view-poi-voting-salt-reload"
+                  onClick={generateNewSalt}
+                >
+                  <FaSyncAlt />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

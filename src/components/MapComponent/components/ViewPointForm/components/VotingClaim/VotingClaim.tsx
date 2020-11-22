@@ -15,7 +15,7 @@ import config from "../../../../../../config";
 import {
   base64ToHex,
   stringToUint,
-  waitForConfirmation
+  waitForConfirmation,
 } from "../../../../../../utils";
 
 const VotingClaim: FC<IVotingClaimProps> = ({
@@ -94,13 +94,21 @@ const VotingClaim: FC<IVotingClaimProps> = ({
   }, [viewPOIConfig, user]);
 
   const claimMoney = () => {
-    setDecryptionFor("VOTE_CLAIM");
+    if (!user) {
+      const modal = {
+        openModal: true,
+        modalConfig: { type: "not-signed" },
+      };
+      toggleModal(modal);
+    } else {
+      setDecryptionFor("VOTE_CLAIM");
 
-    const modal = {
-      openModal: true,
-      modalConfig: { type: "decrypt-wallet" },
-    };
-    toggleModal(modal);
+      const modal = {
+        openModal: true,
+        modalConfig: { type: "decrypt-wallet" },
+      };
+      toggleModal(modal);
+    }
   };
 
   const startClaiming = async () => {

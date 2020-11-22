@@ -25,10 +25,24 @@ function Signup() {
     <div className="Signup">
       <h2>Signup with</h2>
       <button className="wallet-button" onClick={signInWithGithub}>
-        Github
+        <span className="login-icon-container">
+          <img
+            src={require("../../assets/png/github-icon.png")}
+            alt="github-icon"
+            className="login-icon"
+          />
+        </span>
+        <span className="login-text">Github</span>
       </button>
       <button className="wallet-button" onClick={signInWithGoogle}>
-        Google
+        <span className="login-icon-container">
+          <img
+            src={require("../../assets/png/google-icon.png")}
+            alt="google-icon"
+            className="login-icon"
+          />
+        </span>
+        <span className="login-text">Google</span>
       </button>
       <p className="misc-text">
         By clicking continue, you agree to our{" "}

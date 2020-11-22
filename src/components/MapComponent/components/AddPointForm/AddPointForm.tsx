@@ -30,23 +30,31 @@ const AddPointForm: FC<IAddPointForm> = ({
     setWalletInfo,
   } = useContext<IActionModel>(ActionContext);
   console.log("useruser", user);
-  const [poiType, setPoiType] = useState<string>("Jaipur");
-  const [poiName, setPoiName] = useState<string>("Jaipur");
-  const [poiAddress, setPoiAddress] = useState<string>("Jaipur");
-  const [poiDescription, setPoiDescription] = useState<string>("Jaipur");
-  const [poiStakeAmount, setPoiStakeAmount] = useState<string>("233");
+  const [poiType, setPoiType] = useState<string>("road");
+  const [poiName, setPoiName] = useState<string>("");
+  const [poiAddress, setPoiAddress] = useState<string>("");
+  const [poiDescription, setPoiDescription] = useState<string>("");
+  const [poiStakeAmount, setPoiStakeAmount] = useState<string>("");
   const [addPoiLoader, setAddPoiLoader] = useState<boolean>(false);
 
   const componentIsMounted = useRef(true);
 
   const addPOI = () => {
-    setDecryptionFor("ADD_POI");
-
-    const modal = {
-      openModal: true,
-      modalConfig: { type: "decrypt-wallet" },
-    };
-    toggleModal(modal);
+    if(!user) {
+      const modal = {
+        openModal: true,
+        modalConfig: { type: "not-signed" },
+      };
+      toggleModal(modal);
+    } else {
+      setDecryptionFor("ADD_POI");
+      
+      const modal = {
+        openModal: true,
+        modalConfig: { type: "decrypt-wallet" },
+      };
+      toggleModal(modal);
+    }
   };
 
   const startAddingPoi = async () => {
@@ -299,7 +307,6 @@ const AddPointForm: FC<IAddPointForm> = ({
         <div className="add-poi-form-footer">
           <button
             className="add-poi-button"
-            // disabled={!walletAccount}
             onClick={addPOI}
           >
             {addPoiLoader ? (
