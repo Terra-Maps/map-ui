@@ -85,14 +85,15 @@ const AddPointForm: FC<IAddPointForm> = ({
         config.algorand.PORT
       );
       let params = await algodclient.getTransactionParams().do();
-      const index = 13164862;
+      const index = 13190639;
       let appArgs = [
         stringToUint("create_poi"),
         stringToUint(addPOIConfig.geohash),
       ];
       // let appArgsNormal = ["create_poi", addPOIConfig.geohash];
-
-      let xtxn = algosdk.makeApplicationNoOpTxn(
+      console.log(poiStakeAmount);
+      let txn1 = algosdk.makePaymentTxnWithSuggestedParams(sender, "4CU33PUGTXRRQQTPVW6LWE5M43XLKKPIV5ELJVNRK2AIAPTMKURU5DXY44", parseInt(poiStakeAmount), undefined, undefined, params);  
+      let txn2 = algosdk.makeApplicationNoOpTxn(
         sender,
         params,
         index,
@@ -139,18 +140,28 @@ const AddPointForm: FC<IAddPointForm> = ({
       };
 
       const myAccount = algosdk.mnemonicToSecretKey(decryptedWalletPrivateKey);
-
-      console.log("JSONApp", JSON.stringify(txn));
-      let txnAppr: any = algosdk.makeApplicationOptInTxn(sender, params, index);
-      let rawSignedApprTxn = txnAppr.signTxn(myAccount.sk);
-      let opttx = await algodclient.sendRawTransaction(rawSignedApprTxn).do();
-      console.log("Transaction : " + opttx.txId);
+      try {
+        console.log("JSONApp", JSON.stringify(txn));
+        let txnAppr: any = algosdk.makeApplicationOptInTxn(sender, params, index);
+        let rawSignedApprTxn = txnAppr.signTxn(myAccount.sk);
+        let opttx = await algodclient.sendRawTransaction(rawSignedApprTxn).do();
+        console.log("Transaction : " + opttx.txId);
+      } catch (error) {
+        console.log(error)
+      }
+     
 
       params = await algodclient.getTransactionParams().do();
 
       //Must be signed by the account sending the asset
-      const rawSignedTxn = xtxn.signTxn(myAccount.sk);
-      let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
+      let txns = [txn1, txn2]
+      let txgroup = algosdk.assignGroupID(txns);
+      let sg1 = txn1.signTxn(myAccount.sk)
+      let sg2 = txn2.signTxn(myAccount.sk)
+      let signed = []
+      signed.push(sg1)
+      signed.push(sg2)
+      let xtx = await algodclient.sendRawTransaction(signed).do();
       console.log("Transaction : " + xtx.txId);
       await waitForConfirmation(algodclient, xtx.txId);
       setAddPoiLoader(false);

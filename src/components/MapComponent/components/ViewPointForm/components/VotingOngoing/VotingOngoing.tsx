@@ -38,6 +38,7 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
   const [voteSecretSalt, setVoteSecretSalt] = useState<string>("");
   const [userPOIData, setUserPOIData] = useState<any>();
   const [userVote, setUserVote] = useState<string>("");
+  const [poiStakeAmount, setPoiStakeAmount] = useState<string>("");
   const componentIsMounted = useRef(true);
 
   const viewUserPOIData = async (account: string, appID: any, geohash: any) => {
@@ -86,7 +87,7 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
       console.log(user.wallet.address);
       const response = await viewUserPOIData(
         user.wallet.address,
-        13164862,
+        13190639,
         viewPOIConfig.gh.replaceAll("o", "")
       );
       setUserPOIData(response);
@@ -137,7 +138,7 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
       );
       let params = await algodclient.getTransactionParams().do();
       let sender = user.wallet.address;
-      const index = 13164862;
+      const index = 13190639;
 
       const hash = sha256(userVote + voteSecretSalt).slice(0, 16);
       console.log("hash");
@@ -147,7 +148,9 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
         stringToUint(hash),
       ];
       let appAccounts = [viewPOIConfig.creatorAddress];
-      let txn1 = algosdk.makeApplicationNoOpTxn(
+      let txn1 = algosdk.makePaymentTxnWithSuggestedParams(sender, "4CU33PUGTXRRQQTPVW6LWE5M43XLKKPIV5ELJVNRK2AIAPTMKURU5DXY44", parseInt(poiStakeAmount), undefined, undefined, params);  
+
+      let txn2 = algosdk.makeApplicationNoOpTxn(
         sender,
         params,
         index,
@@ -157,16 +160,26 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
       // Must be signed by the account sending the asset
       console.log(decryptedWalletPrivateKey);
       const myAccount = algosdk.mnemonicToSecretKey(decryptedWalletPrivateKey);
-      let txnAppr: any = algosdk.makeApplicationOptInTxn(sender, params, index);
-      let rawSignedApprTxn = txnAppr.signTxn(myAccount.sk);
-      let opttx = await algodclient.sendRawTransaction(rawSignedApprTxn).do();
-      console.log("Transaction : " + opttx.txId);
+      try {
+        let txnAppr: any = algosdk.makeApplicationOptInTxn(sender, params, index);
+        let rawSignedApprTxn = txnAppr.signTxn(myAccount.sk);
+        let opttx = await algodclient.sendRawTransaction(rawSignedApprTxn).do();
+        console.log("Transaction : " + opttx.txId);
+      } catch (error) {
+        console.log(error)
+      }
+    
 
       params = await algodclient.getTransactionParams().do();
       
-      console.log(myAccount);
-      const rawSignedTxn = txn1.signTxn(myAccount.sk);
-      let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
+      let txns = [txn1, txn2]
+      let txgroup = algosdk.assignGroupID(txns);
+      let sg1 = txn1.signTxn(myAccount.sk)
+      let sg2 = txn2.signTxn(myAccount.sk)
+      let signed = []
+      signed.push(sg1)
+      signed.push(sg2)
+      let xtx = await algodclient.sendRawTransaction(signed).do();
       console.log("Transaction : " + xtx.txId);
       await waitForConfirmation(algodclient, xtx.txId);
       saveSalt();
@@ -284,8 +297,8 @@ const VotingOngoing: FC<IVotingOngoingProps> = ({
                 className="view-poi-voting-stake-input"
                 placeholder="Enter a stake amount"
                 min={1}
-                // value={poiStakeAmount}
-                // onChange={(e) => setPoiStakeAmount(e.target.value)}
+                value={poiStakeAmount}
+                onChange={(e) => setPoiStakeAmount(e.target.value)}
               />
             </div>
             <div className="view-poi-voting-button-options">

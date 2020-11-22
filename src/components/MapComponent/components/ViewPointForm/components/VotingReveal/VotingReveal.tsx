@@ -89,7 +89,7 @@ const VotingReveal: FC<IVotingRevealProps> = ({
     try {
       const response = await viewUserPOIData(
         user.wallet.address,
-        13164862,
+        13190639,
         viewPOIConfig.gh.replaceAll("o", "")
       );
       setUserPOIData(response);
@@ -130,7 +130,7 @@ const VotingReveal: FC<IVotingRevealProps> = ({
       );
       let params = await algodclient.getTransactionParams().do();
       let sender = user.wallet.address;
-      const index = 13164862;
+      const index = 13190639;
 
       console.log("hash");
       let appArgs = [

@@ -105,7 +105,7 @@ function MapComponent() {
     let indexerClient = new algosdk.Indexer(token, baseServer, port);
     let assetInfo = await indexerClient
       .searchForTransactions()
-      .applicationID(13164862)
+      .applicationID(13190639)
       .notePrefix(base64Chikara)
       .do();
     console.log(assetInfo);

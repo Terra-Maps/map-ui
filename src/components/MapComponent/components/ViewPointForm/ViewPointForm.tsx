@@ -34,7 +34,7 @@ const ViewPointForm: FC<IViewPointFormProps> = ({
     console.log("viewpOI ", viewPOIConfig.creatorAddress);
     const response = await fetchPOIData(
       viewPOIConfig.creatorAddress,
-      13164862,
+      13190639,
       viewPOIConfig.gh
     );
     setViewPoiStatusLoading(false);
