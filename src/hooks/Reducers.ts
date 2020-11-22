@@ -66,7 +66,7 @@ export const stateInitialValue: IStateModel = {
   encryptedWalletPrivateKey: "",
   decryptedWalletPrivateKey: "",
   user: null,
-  userLoading: true,
+  userLoading: false,
   decryptionDone: false,
   decryptionFor: null
 };
