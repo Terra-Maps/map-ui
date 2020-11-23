@@ -86,6 +86,13 @@ function Landing() {
           <div className="landing-solution-title">Our Solution</div>
           <div className="landing-solution-list">
             <div className="landing-solution-item">
+              <img
+                src={require("../../assets/png/map_1.png")}
+                alt="logo"
+                className="logo-image"
+                height={64}
+                loading="lazy"
+              />
               <h3>Collaborative Verified Map.</h3>
               <p>
                 TerraMaps provide more resilient alternatives to centralized
@@ -93,6 +100,13 @@ function Landing() {
               </p>
             </div>
             <div className="landing-solution-item">
+              <img
+                src={require("../../assets/png/blockchain.png")}
+                alt="logo"
+                className="logo-image"
+                height={64}
+                loading="lazy"
+              />
               <h3>Built on blockchain.</h3>
               <p>
                 TerraMaps is built on the Algorand blockchain, a decentralized
@@ -101,6 +115,13 @@ function Landing() {
               </p>
             </div>
             <div className="landing-solution-item">
+              <img
+                src={require("../../assets/png/money.png")}
+                alt="logo"
+                className="logo-image"
+                height={64}
+                loading="lazy"
+              />
               <h3>Incentive for verification.</h3>
               <p>
                 TerraMaps adds a monetization and token incentive layer to open
@@ -119,6 +140,14 @@ function Landing() {
           </div>
           <div className="landing-usecase-list">
             <div className="landing-usecase-item">
+              <img
+                src={require("../../assets/png/cloud-computing.png")}
+                alt="logo"
+                className="logo-image"
+                height={64}
+                loading="lazy"
+                color={"white"}
+              />
               <h3>Internet of Things</h3>
               <p>
                 Secure location verification and localization for networks of
@@ -126,6 +155,13 @@ function Landing() {
               </p>
             </div>
             <div className="landing-usecase-item">
+              <img
+                src={require("../../assets/png/placeholder.png")}
+                alt="logo"
+                className="logo-image"
+                height={64}
+                loading="lazy"
+              />
               <h3>Geospatial Data</h3>
               <p>
                 Data provenance and attribution to support the development of
@@ -133,6 +169,13 @@ function Landing() {
               </p>
             </div>
             <div className="landing-usecase-item">
+              <img
+                src={require("../../assets/png/supply-chain.png")}
+                alt="logo"
+                className="logo-image"
+                height={64}
+                loading="lazy"
+              />
               <h3>Supply Chain</h3>
               <p>
                 Verifiable and precise product tracking from supplier to

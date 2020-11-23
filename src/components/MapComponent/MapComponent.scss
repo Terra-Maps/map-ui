@@ -103,6 +103,15 @@
     }
   }
 
+  .marker-points {
+    background-image: url("https://www.flaticon.com/svg/static/icons/svg/594/594846.svg");
+    background-size: cover;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
   .map-side-bar {
     position: absolute;
     top: 0;

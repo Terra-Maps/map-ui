@@ -21,7 +21,9 @@ mapboxgl.accessToken = config.maps.MAP_BOX_ACCESS_TOKEN;
 
 function MapComponent() {
   let mapContainer: any = "";
-  const { lat, lng, zoom, user, userLoading } = useContext<IStateModel>(StateContext);
+  const { lat, lng, zoom, user, userLoading } = useContext<IStateModel>(
+    StateContext
+  );
   const { setMapLocation, toggleModal } = useContext<IActionModel>(
     ActionContext
   );
@@ -56,6 +58,19 @@ function MapComponent() {
       setMap(newMap);
       loadMapPoi(newMap);
     });
+
+    newMap.on("zoom", function () {
+      var points = document.getElementsByClassName("marker-points");
+      console.log("points", points);
+      Array.from(points).map((point: any) => {
+        if (newMap.getZoom() > 7) {
+          console.log(point);
+          point.style.display = "block";
+        } else {
+          point.style.display = "none";
+        }
+      });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -79,7 +94,10 @@ function MapComponent() {
     const populateMapPoints = await populateMapPoint(base64Chikara);
     if (map) {
       populateMapPoints.map((points: any) => {
-        const marker = new mapboxgl.Marker({ color: "#6c98e4" })
+        // create a HTML element for each feature
+        var el = document.createElement("div");
+        el.className = "marker-points";
+        const marker = new mapboxgl.Marker(el)
           .setLngLat([points.latlng.lon, points.latlng.lat])
           .addTo(map);
         marker.getElement().addEventListener("click", function (e) {
