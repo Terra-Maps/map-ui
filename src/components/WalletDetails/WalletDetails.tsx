@@ -44,8 +44,8 @@ function WalletDetails() {
     setAlgoUsdExPrice(exPrice);
     setLoadWalletInfo(false);
   };
-  let algoBalance = 0
-  if(walletInfo) algoBalance = walletInfo.amount / 10 ** 6;
+  let algoBalance = 0;
+  if (walletInfo) algoBalance = walletInfo.amount / 10 ** 6;
 
   return (
     <div className="WalletDetails">
@@ -59,14 +59,10 @@ function WalletDetails() {
             </div>
           </div>
           <div className="wallet-details-item">
-            <div className="wallet-details-item-title">Algo Balance:</div>
-            <div className="wallet-details-item-value">
-              {algoBalance} ALGO ($ {(algoBalance * algoUsdExPrice).toFixed(2)})
-            </div>
-          </div>
-          <div className="wallet-details-item">
             <div className="wallet-details-item-title">TRM Balance:</div>
-            <div className="wallet-details-item-value">1000 TRM</div>
+            <div className="wallet-details-item-value">
+              {algoBalance} TRM ($ {(algoBalance * algoUsdExPrice).toFixed(2)})
+            </div>
           </div>
         </>
       ) : (
