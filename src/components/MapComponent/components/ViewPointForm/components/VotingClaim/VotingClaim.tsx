@@ -149,9 +149,13 @@ const VotingClaim: FC<IVotingClaimProps> = ({
       // Must be signed by the account sending the asset
       const myAccount = algosdk.mnemonicToSecretKey(decryptedWalletPrivateKey);
       const rawSignedTxn = txn1.signTxn(myAccount.sk);
-      let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
-      console.log("Transaction : " + xtx.txId);
-      await waitForConfirmation(algodclient, xtx.txId);
+      try {
+        let xtx = await algodclient.sendRawTransaction(rawSignedTxn).do();
+        console.log("Transaction : " + xtx.txId);
+        await waitForConfirmation(algodclient, xtx.txId);
+      } catch (error) {
+        console.log(error);
+      }
       setDecryptionFor(null);
       setWalletInfo("");
       setDecryptionDone(false);
