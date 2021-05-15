@@ -221,7 +221,7 @@ function Landing() {
         </div>
         <div className="landing-powered-logos">
             <div className="app-logo-container">
-              <Link to="/">
+              <a href="https://www.binance.org/en/smartChain" target="_blank">
                 <img
                   src={require("../../assets/png/binance.png")}
                   alt="logo"
@@ -230,10 +230,10 @@ function Landing() {
                   width={92}
                   loading="lazy"
                 />
-              </Link>
+              </a>
             </div>
             <div className="app-logo-container">
-              <Link to="/">
+              <a href="https://polygon.technology/" target="_blank">
                 <img
                   src={require("../../assets/png/matic_network.png")}
                   alt="logo"
@@ -242,10 +242,10 @@ function Landing() {
                   width={92}
                   loading="lazy"
                 />
-              </Link>
+              </a>
             </div>
             <div className="app-logo-container">
-              <Link to="/">
+              <a href="https://www.algorand.com/" target="_blank">
                 <img
                   src={require("../../assets/png/algorand.png")}
                   alt="logo"
@@ -254,10 +254,10 @@ function Landing() {
                   width={92}
                   loading="lazy"
                 />
-              </Link>
+              </a>
             </div>
             <div className="app-logo-container">
-              <Link to="/">
+              <a href="https://polkadot.network/" target="_blank">
                 <img
                   src={require("../../assets/png/polkadot.png")}
                   alt="logo"
@@ -266,14 +266,14 @@ function Landing() {
                   width={92}
                   loading="lazy"
                 />
-              </Link>
+              </a>
             </div>
           </div>
         
       </div>
-      <div className="landing-roadmap">
-        <div className="landing-roadmap-container">
-          <div className="landing-roadmap-title">Subscribe for Latest Updates</div>
+      <div className="landing-subscribe">
+        <div className="landing-subscribe-container">
+          <div className="landing-subscribe-title">Subscribe for Latest Updates</div>
         </div>
         <iframe style={{border: "none"}} src="https://terramaps.substack.com/embed" width="480" height="320" scrolling="no" />
       </div>
@@ -347,7 +347,7 @@ function Landing() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Built on BSC
+              Built on Blockchain
             </a>{" "}
             •{" "}
             <a
