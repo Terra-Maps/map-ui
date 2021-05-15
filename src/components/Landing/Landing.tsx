@@ -256,6 +256,18 @@ function Landing() {
                 />
               </Link>
             </div>
+            <div className="app-logo-container">
+              <Link to="/">
+                <img
+                  src={require("../../assets/png/polkadot.png")}
+                  alt="logo"
+                  className="logo-image"
+                  height={92}
+                  width={92}
+                  loading="lazy"
+                />
+              </Link>
+            </div>
           </div>
         
       </div>
