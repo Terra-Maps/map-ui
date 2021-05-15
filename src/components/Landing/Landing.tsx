@@ -42,6 +42,14 @@ function Landing() {
                 >
                   Contact
                 </a>
+                <a
+                  className={`login-container`}
+                  href="https://discord.gg/MB7G7KaJ6w"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Whitepaper
+                </a>
                 <button
                   type="button"
                   className="primary-button"
@@ -132,6 +140,19 @@ function Landing() {
           </div>
         </div>
       </div>
+      <div className="landing-footer">
+        <div className="landing-footer-container">
+        <div className="landing-solution-title">TRM Tokenomics</div>
+          <img
+            src={require("../../assets/png/tokenomics.png")}
+            alt="logo"
+            className="tokenomics-image"
+            height={64}
+            loading="lazy"
+          />
+        </div>
+      </div>
+      
       <div className="landing-usecase">
         <div className="landing-usecase-container">
           <div className="landing-usecase-title">A Field of Applications</div>
@@ -239,15 +260,15 @@ function Landing() {
           </div>
           <div className="landing-footer-texts">
             <a
-              href="https://www.algorand.com/"
+              href="https://www.terramaps.space/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Built on Algorand
+              Built on BSC
             </a>{" "}
             •{" "}
             <a
-              href="https://www.algorand.com/"
+              href="https://www.terramaps.space/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -255,7 +276,7 @@ function Landing() {
             </a>{" "}
             •{" "}
             <a
-              href="https://www.algorand.com/"
+              href="https://www.terramaps.space/"
               target="_blank"
               rel="noopener noreferrer"
             >
