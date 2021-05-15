@@ -208,12 +208,12 @@ function Landing() {
           />
         </div>
       </div>
-      <div className="landing-roadmap">
+      {/* <div className="landing-roadmap">
         <div className="landing-roadmap-container">
           <div className="landing-roadmap-title">Roadmap</div>
           <div className="landing-roadmap-title2">Coming Soon</div>
         </div>
-      </div>
+      </div> */}
       <div className="landing-powered">
         <div className="landing-powered-container">
           <div className="landing-powered-title">Powered By</div>
