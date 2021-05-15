@@ -44,7 +44,7 @@ function Landing() {
                 </a>
                 <a
                   className={`login-container`}
-                  href="https://discord.gg/MB7G7KaJ6w"
+                  href="https://drive.google.com/file/d/1NveDpAMgyx_6juGGffGLJ4qG9glw1VNX/view?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -140,19 +140,6 @@ function Landing() {
           </div>
         </div>
       </div>
-      <div className="landing-footer">
-        <div className="landing-footer-container">
-        <div className="landing-solution-title">TRM Tokenomics</div>
-          <img
-            src={require("../../assets/png/tokenomics.png")}
-            alt="logo"
-            className="tokenomics-image"
-            height={64}
-            loading="lazy"
-          />
-        </div>
-      </div>
-      
       <div className="landing-usecase">
         <div className="landing-usecase-container">
           <div className="landing-usecase-title">A Field of Applications</div>
@@ -205,6 +192,78 @@ function Landing() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="landing-footer">
+        <div className="landing-footer-container">
+          <div className="landing-solution-title">TRM Tokenomics</div>
+          <div className="total-supply-title">
+            TOTAL SUPPLY - 100,000,000 TRM
+          </div>
+          <img
+            src={require("../../assets/png/tokenomics.png")}
+            alt="logo"
+            className="tokenomics-image"
+            height={64}
+            loading="lazy"
+          />
+        </div>
+      </div>
+      <div className="landing-roadmap">
+        <div className="landing-roadmap-container">
+          <div className="landing-roadmap-title">Roadmap</div>
+          <div className="landing-roadmap-title2">Coming Soon</div>
+        </div>
+      </div>
+      <div className="landing-powered">
+        <div className="landing-powered-container">
+          <div className="landing-powered-title">Powered By</div>
+          <div className="landing-powered-title2">Terra Maps is Built on</div>
+        </div>
+        <div className="landing-powered-logos">
+            <div className="app-logo-container">
+              <Link to="/">
+                <img
+                  src={require("../../assets/png/binance.png")}
+                  alt="logo"
+                  className="logo-image"
+                  height={92}
+                  width={92}
+                  loading="lazy"
+                />
+              </Link>
+            </div>
+            <div className="app-logo-container">
+              <Link to="/">
+                <img
+                  src={require("../../assets/png/matic_network.png")}
+                  alt="logo"
+                  className="logo-image"
+                  height={92}
+                  width={92}
+                  loading="lazy"
+                />
+              </Link>
+            </div>
+            <div className="app-logo-container">
+              <Link to="/">
+                <img
+                  src={require("../../assets/png/algorand.png")}
+                  alt="logo"
+                  className="logo-image"
+                  height={92}
+                  width={92}
+                  loading="lazy"
+                />
+              </Link>
+            </div>
+          </div>
+        
+      </div>
+      <div className="landing-roadmap">
+        <div className="landing-roadmap-container">
+          <div className="landing-roadmap-title">Subscribe for Latest Updates</div>
+        </div>
+        <iframe style={{border: "none"}} src="https://terramaps.substack.com/embed" width="480" height="320" scrolling="no" />
       </div>
       <div className="landing-footer">
         <div className="landing-footer-container">
