@@ -97,7 +97,7 @@ function Landing() {
               <img
                 src={require("../../assets/png/map_1.png")}
                 alt="logo"
-                className="logo-image"
+                className="card-image"
                 height={64}
                 loading="lazy"
               />
@@ -111,7 +111,7 @@ function Landing() {
               <img
                 src={require("../../assets/png/blockchain.png")}
                 alt="logo"
-                className="logo-image"
+                className="card-image"
                 height={64}
                 loading="lazy"
               />
@@ -126,7 +126,7 @@ function Landing() {
               <img
                 src={require("../../assets/png/money.png")}
                 alt="logo"
-                className="logo-image"
+                className="card-image"
                 height={64}
                 loading="lazy"
               />
@@ -164,7 +164,7 @@ function Landing() {
               <img
                 src={require("../../assets/png/cloud-computing.png")}
                 alt="logo"
-                className="logo-image"
+                className="card-image"
                 height={64}
                 loading="lazy"
                 color={"white"}
@@ -179,7 +179,7 @@ function Landing() {
               <img
                 src={require("../../assets/png/placeholder.png")}
                 alt="logo"
-                className="logo-image"
+                className="card-image"
                 height={64}
                 loading="lazy"
               />
@@ -193,7 +193,7 @@ function Landing() {
               <img
                 src={require("../../assets/png/supply-chain.png")}
                 alt="logo"
-                className="logo-image"
+                className="card-image"
                 height={64}
                 loading="lazy"
               />
