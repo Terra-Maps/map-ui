@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
-import { FaSpaceShuttle, FaDiscord, FaGithub, FaTwitter } from "react-icons/fa";
+import { FaSpaceShuttle, FaDiscord, FaGithub, FaTwitter, FaTelegram } from "react-icons/fa";
 import "./Landing.scss";
 
 function Landing() {
@@ -308,13 +308,25 @@ function Landing() {
               className="landing-footer-social-icon"
               onClick={(e) =>
                 window.open(
-                  "https://twitter.com/argoapplive",
+                  "https://twitter.com/MapsTerra",
                   "_blank",
                   "noopener"
                 )
               }
             >
               <FaTwitter />
+            </div>
+            <div
+              className="landing-footer-social-icon"
+              onClick={(e) =>
+                window.open(
+                  "https://t.me/terramaps",
+                  "_blank",
+                  "noopener"
+                )
+              }
+            >
+              <FaTelegram />
             </div>
           </div>
           <div className="landing-footer-texts">
