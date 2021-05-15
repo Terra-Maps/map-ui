@@ -354,7 +354,7 @@ function MapComponent() {
 
       <div className="map-left-side-bar">
         <div className="map-auth-container">
-          {userLoading ? null : !user ? (
+          {/* {userLoading ? null : !user ? (
             <>
               <button
                 className="login-button"
@@ -389,7 +389,7 @@ function MapComponent() {
               loading="lazy"
               onClick={(e) => setShowProfileDropdown(true)}
             />
-          )}
+          )} */}
           {showProfileDropdown && (
             <ProfileDropdown setShowDropdown={setShowProfileDropdown} />
           )}
